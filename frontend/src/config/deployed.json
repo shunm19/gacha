@@ -1,50 +1,56 @@
 {
   "network": "testnet",
-  "packageId": "0x1efe6dd46ecb334c9dd3fc326c653fc996a222dcab79068ab38923d9ebd02b1c",
-  "publishDigest": "CFSg9t7toE2ohvPeVD5kEVeoT87sKbS6SymfbBpiizjx",
-  "coinType": "0xa1ec7fc00a6f40db9693ad1415d0c193ad3906494428cf252621037bd7117e29::usdc::USDC",
+  "packageId": "0xb086a10503300345c5192fcffcf72226661c9afed7fe199383f4dc0be166698a",
+  "publishDigest": "3yCxE6HDkxcDmc5Z4KtbvFLwCcgncZUxZngt31vgYLJh",
+  "coinType": "0xb086a10503300345c5192fcffcf72226661c9afed7fe199383f4dc0be166698a::gacha_point::GACHA_POINT",
+  "coin": {
+    "symbol": "GP",
+    "decimals": 0,
+    "yenPerUnit": 1
+  },
+  "bankId": "0x600366fa26e69cb1351765130f5758739ee9c24fdbda3bbee419644e62c6cce0",
   "operator": "0x76c107b38b772c32c8b37d101ace64ac98bcce4e692c4a00fd2188ea642c9902",
   "pools": {
     "main": {
-      "poolId": "0xcea03ebbdaa970e11c1792d5611beb4500113255064533a90e36e12fa031d6be",
-      "adminCapId": "0xadb0ac59969ac0b6989fd9b5cf1c8271311493bc34d63fe649327b48b21b9556",
+      "poolId": "0x0c287a9067911a0cdca92f0b92040e061a4e4b40dabefbe3d2de33d6eb54cd9c",
+      "adminCapId": "0xe5348200898b8adf15f1f67c3e6b26d415baf815d720c95b267bb87b4a0c75f9",
       "mode": "instant",
-      "createDigest": "dHF45m5PSZNE1Z7UfrUyToGp7f2t4dC9sto67HQLQc2"
+      "createDigest": "fNC4RhmqkWT9sCCAa59gLYEbSJ1RTx54pmRM5qE8mUc"
     },
     "batch": {
-      "poolId": "0x2e7a9532978d3eda3748ac75523abe074c2a28b2fa53bec41ba166dbd23bd2ae",
-      "adminCapId": "0xe8c7c562f326748472a373c1b920defba56ae4481a6377c8f144f604ef124053",
+      "poolId": "0xf6aacebbdc4c34154b83f0fab71dafcdbe7f855857e01bf7b617292b514e0c0b",
+      "adminCapId": "0x7c9b37da394df4a1ab8ecb26a6ba7422674c098e776ca69d66631783b9fd7c1d",
       "mode": "batch",
-      "createDigest": "4s8XcfLKQ9iqm8we1zGPCB75GzGt928qXqwPQhFSwr7T"
+      "createDigest": "81MxxSBAGcSMyWPYyFiEtkjyAVsbL5At5CK6A77iED1Y"
     }
   },
   "blind": {
-    "packageId": "0x39fb2e41f232ba160572e5994de7d31df6394d238de5d57d4d0c82bf330d46c9",
-    "publishDigest": "H7vE2bP8ZXaJsGc16zCDSEgqxexDHgwQgzryedWu7Vfm",
-    "poolId": "0xe7e236d1831bcb8650bff1216568f26f9eabb21c1ccfa83efe46a552192e1114",
-    "capId": "0xc9c31b967fa88ffa9822c8e61b151b273e270f777ef2433c1d08da6501c0b5ab",
-    "createDigest": "25FBqnmRQEWGiEKLYCAQ7oLWaDEiiyqnn7WmKYZqe8sf",
-    "sealDigest": "Hvvri2GivKX1tLDUESZwQnQvTSgsAQ7TdsbeQ4euABg6",
+    "packageId": "0xb086a10503300345c5192fcffcf72226661c9afed7fe199383f4dc0be166698a",
+    "publishDigest": "3yCxE6HDkxcDmc5Z4KtbvFLwCcgncZUxZngt31vgYLJh",
+    "poolId": "0x6a294eeb6b2d16030e74e948c88e934b8cd0af629cd61524a4a2d2ce508c9d73",
+    "capId": "0xa8f9c6c81a2ba2c772aea94997cad04717fd7e517132d8062cf431bbc2788506",
+    "createDigest": "5SEbsfpDsThLjLVjLM2rDN4MKqPZwEZk9evMGu87jvNf",
+    "sealDigest": "CFpxeJhVP48NpP7UE3KP4L7D31dyC3C2T8KwM51aoynW",
+    "pools": {
+      "main": {
+        "poolId": "0x6a294eeb6b2d16030e74e948c88e934b8cd0af629cd61524a4a2d2ce508c9d73",
+        "capId": "0xa8f9c6c81a2ba2c772aea94997cad04717fd7e517132d8062cf431bbc2788506",
+        "createDigest": "5SEbsfpDsThLjLVjLM2rDN4MKqPZwEZk9evMGu87jvNf",
+        "sealDigest": "CFpxeJhVP48NpP7UE3KP4L7D31dyC3C2T8KwM51aoynW"
+      },
+      "mini": {
+        "poolId": "0xc8335abf4d4791db9ee914114c6d9f49c14b2b4db3df7b4fe4a54e5073937167",
+        "capId": "0x80e8bc89e1ce86c810d75af62a962fbe2f50a0c1f7453a36aef5666bde061668",
+        "createDigest": "B3bsDLeDtdvaF2tqn7VQTeGECe2p8AaxmZeBq3REiy6G",
+        "sealDigest": "2Tps2y4WGgQCdEKpk2KPdLX8DpHeNueuXRNhiQExWJi1"
+      }
+    },
     "seal": {
       "serverObjectIds": [
         "0xb012378c9f3799fb5b1a7083da74a4069e3c3f1c93de0b27212a5799ce1e1e98"
       ],
       "threshold": 1,
       "aggregatorUrl": "https://seal-aggregator-testnet.mystenlabs.com"
-    },
-    "pools": {
-      "main": {
-        "poolId": "0xe7e236d1831bcb8650bff1216568f26f9eabb21c1ccfa83efe46a552192e1114",
-        "capId": "0xc9c31b967fa88ffa9822c8e61b151b273e270f777ef2433c1d08da6501c0b5ab",
-        "createDigest": "25FBqnmRQEWGiEKLYCAQ7oLWaDEiiyqnn7WmKYZqe8sf",
-        "sealDigest": "Hvvri2GivKX1tLDUESZwQnQvTSgsAQ7TdsbeQ4euABg6"
-      },
-      "mini": {
-        "poolId": "0x6ef8078d734b07be0f67b6e04d16837af2cd80f0e740dfe3a72b4f64608db3dc",
-        "capId": "0x17ecf72992f1dd76083707ed3f7761d14511ddba35bb8725c9ee24200d017657",
-        "createDigest": "71rskeSb78zPRyKD39equzfP3QRKrm6jQGKzFY5MqmFs",
-        "sealDigest": "9WmnFAF9E9WEhfP7jR5iqTajM9drq3M52ktypEuNts9g"
-      }
     }
   }
 }

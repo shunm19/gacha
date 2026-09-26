@@ -7,7 +7,7 @@ import { BlindDrawnEvent, NONE, type BlindPoolT } from "../lib/bcs";
 import { openSlots, type Opened } from "../lib/blind";
 import { useBlindFeed, useBlindPool, useBlindRedemptions, useMyBlindPulls, useSeal } from "../lib/blindChain";
 import { useExec, useOwnsObject } from "../lib/chain";
-import { countdown, n, short, txUrl, unitsToYen, usdc, yen, type CardMeta, type Metadata } from "../lib/format";
+import { countdown, n, short, txUrl, unitsToYen, yen, type CardMeta, type Metadata, amt } from "../lib/format";
 import { CardTile, TierBadge } from "./CardTile";
 import { useNow } from "./MyPulls";
 import { Stat } from "./PoolView";
@@ -168,7 +168,7 @@ export function BlindView({ deployed, meta, byCard }: Props) {
             {left === 0 || pool.closed ? "CLOSED" : busy || sealBusy ? "Working…" : "BLIND DRAW ×1"}
           </button>
           <div className="text-xs text-muted-foreground">
-            {usdc(pool.price)} USDC ≈ {yen(unitsToYen(pool.price, meta))} per draw
+            {amt(pool.price)} (= {yen(unitsToYen(pool.price, meta))}) per draw
           </div>
         </div>
       </div>
@@ -198,7 +198,7 @@ export function BlindView({ deployed, meta, byCard }: Props) {
         />
         <Stat
           label="Collateral locked"
-          value={`${usdc(pool.collateral, 2)} USDC`}
+          value={amt(pool.collateral, 2)}
           sub={`top prize ${yen(unitsToYen(pool.max_value, meta))} if a result is hidden`}
         />
       </div>
@@ -325,7 +325,7 @@ export function BlindView({ deployed, meta, byCard }: Props) {
                     }
                     className="rounded-lg bg-emerald-400 px-3 py-1.5 text-xs font-bold text-black"
                   >
-                    Claim {usdc(n(r.card.value) * n(pool.collateral_bps) / 10000)} USDC
+                    Claim {amt((n(r.card.value) * n(pool.collateral_bps)) / 10000)}
                   </button>
                 )}
               </div>

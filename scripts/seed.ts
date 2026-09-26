@@ -5,9 +5,9 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { Transaction, coinWithBalance } from "@mysten/sui/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import { fromHex } from "@mysten/sui/utils";
-import { ROOT, client, createdObjects, keypair, readDeployed, writeDeployed } from "./lib.ts";
+import { ROOT, client, createdObjects, keypair, payCoin, readDeployed, writeDeployed } from "./lib.ts";
 
 const { values: args } = parseArgs({
   options: {
@@ -28,6 +28,8 @@ type Spec = {
   metadata_hash: string;
   collateral_bps: number;
   redeem_window_ms: number;
+  values_jpy: number[];
+  price_jpy: number;
 };
 
 const spec = JSON.parse(readFileSync(resolve(ROOT, "scripts/pool_spec.json"), "utf8")) as Spec;
@@ -42,20 +44,27 @@ if (args.batch) {
   idx = [byTier[0][0], ...byTier[1].slice(0, 2), ...byTier[2].slice(0, 3), ...byTier[3]].slice(0, n);
 }
 const pick = <T,>(xs: T[]) => idx.map((i) => xs[i]);
-const values = pick(spec.values);
+// Gacha Point pools (bank present) use yen values directly: 1 GP = 1 JPY.
+const gp = !!deployed.bankId;
+const values = pick(gp ? spec.values_jpy : spec.values);
 const totalValue = values.reduce((a, b) => a + b, 0);
 const collateral = Math.ceil((totalValue * spec.collateral_bps) / 10_000);
+// A subset keeps the same ~95% return; the full pool uses the exported price.
+const price =
+  idx.length === spec.card_ids.length
+    ? gp ? spec.price_jpy : spec.price
+    : gp ? Math.round(totalValue / (idx.length * 0.95) / 100) * 100 : Math.round(totalValue / (idx.length * 0.95));
 
 const tx = new Transaction();
 const common = [
   tx.pure.string(args.batch ? `${spec.name} — Batch Break` : spec.name),
-  tx.pure.u64(spec.price),
+  tx.pure.u64(price),
   tx.pure.vector("u64", pick(spec.card_ids)),
   tx.pure.vector("u64", pick(spec.certs)),
   tx.pure.vector("u64", values),
   tx.pure.vector("u8", pick(spec.tiers)),
   tx.pure.vector("u8", Array.from(fromHex(spec.metadata_hash))),
-  coinWithBalance({ type: deployed.coinType, balance: collateral }),
+  payCoin(tx, deployed, collateral),
   tx.pure.u64(spec.collateral_bps),
   tx.pure.u64(spec.redeem_window_ms),
 ];
@@ -76,7 +85,7 @@ if (args.batch) {
 
 console.log(
   `creating ${args.batch ? "batch" : "instant"} pool: ${idx.length} prizes, ` +
-    `price ${spec.price / 1e6} USDC, collateral ${collateral / 1e6} USDC`,
+    `price ${price} ${gp ? "GP" : "units"}, collateral ${collateral} ${gp ? "GP" : "units"}`,
 );
 const res = await client.signAndExecuteTransaction({
   transaction: tx,

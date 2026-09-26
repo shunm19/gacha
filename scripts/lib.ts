@@ -6,6 +6,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SuiGrpcClient } from "@mysten/sui/grpc";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
+import { Transaction, coinWithBalance, type TransactionObjectArgument } from "@mysten/sui/transactions";
 import { fromBase64 } from "@mysten/sui/utils";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -38,11 +39,17 @@ export function keypair(): Ed25519Keypair {
   return kp;
 }
 
+export type CoinInfo = { symbol: string; decimals: number; yenPerUnit: number };
+
 export type Deployed = {
   network: "testnet";
   packageId: string;
   publishDigest: string;
   coinType: string;
+  /** Display info for the payment coin (Gacha Point: GP, 0 decimals, 1 GP = 1 JPY). */
+  coin?: CoinInfo;
+  /** Shared PointBank that charges Gacha Points. */
+  bankId?: string;
   operator: string;
   pools: Record<
     string,
@@ -69,6 +76,24 @@ export function readDeployed(): Deployed {
 export function writeDeployed(d: Deployed) {
   writeFileSync(DEPLOYED, JSON.stringify(d, null, 2) + "\n");
   console.log(`wrote ${DEPLOYED}`);
+}
+
+export const MAX_CHARGE = 1_000_000;
+
+/**
+ * A payment/collateral coin of `amount` for `tx`: Gacha Points are charged from
+ * the bank (in MAX_CHARGE chunks); any other coin comes from the wallet.
+ */
+export function payCoin(tx: Transaction, d: Deployed, amount: number | bigint): TransactionObjectArgument {
+  const total = BigInt(amount);
+  if (!d.bankId) return tx.add(coinWithBalance({ type: d.coinType, balance: total }));
+  const coins: TransactionObjectArgument[] = [];
+  for (let left = total; left > 0n; left -= BigInt(MAX_CHARGE)) {
+    const chunk = left > BigInt(MAX_CHARGE) ? BigInt(MAX_CHARGE) : left;
+    coins.push(tx.moveCall({ target: `${d.packageId}::gacha_point::charge`, arguments: [tx.object(d.bankId), tx.pure.u64(chunk)] }));
+  }
+  if (coins.length > 1) tx.mergeCoins(coins[0], coins.slice(1));
+  return coins[0];
 }
 
 /** Map created object ids to their Move types for a finished transaction. */

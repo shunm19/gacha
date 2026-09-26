@@ -95,16 +95,18 @@ Two sale modes share one pool type:
 
 ### Sui features used
 
+
 `sui::random` (on-chain randomness), **Seal** (decentralized access-controlled
 decryption with Move policies), shared objects, owned objects as claim tickets
 (`Pull`, `Spot` — tradable), `sui::display` for wallet rendering, `Clock` deadlines,
-`Balance<USDC>` escrow for sales and collateral, events, PTBs with `coinWithBalance`,
+`Balance<T>` escrow for sales and collateral, a `Coin` issued with `coin_registry`
+(Gacha Point), events, PTBs with `coinWithBalance`,
 `package::make_immutable` in the publish PTB, dapp-kit v2 + gRPC.
 
 ## Repository
 
 ```
-move/oripa/            Move package: sources/pool.move (open + batch), sources/blind.move (Seal), 34 tests
+move/oripa/            Move package: sources/pool.move (open + batch), sources/blind.move (Seal), sources/gacha_point.move (GP coin), 37 tests
 scripts/export_cards.py  builds the demo pool from psa-data (SNKRDUNK prices + images)
 scripts/deploy.ts      publish + make_immutable in one tx
 scripts/seed.ts        create_pool / create_batch_pool with USDC collateral
@@ -126,22 +128,29 @@ npx tsx scripts/deploy.ts --blind && npx tsx scripts/seed-blind.ts   # blind poo
 make dev                  # http://localhost:5173 (Slush wallet on testnet + testnet USDC)
 ```
 
-Demo economics: on-chain amounts are **testnet USDC at 1/1000 of the market price**
-(¥ → USD at 150, then ÷1000), so a ¥32,000 draw costs 0.2133 USDC and the pool's
-¥1.22M of prizes is backed by 8.17 USDC of collateral. The redemption window is 2
-minutes so the collateral path can be shown live.
+Payments use **Gacha Point (GP)**, a coin issued by this package (`gacha_point.move`,
+registered via `coin_registry`, 0 decimals, **1 GP = ¥1**), so prices and prize values
+are the real market prices: a draw is 32,000 GP and the open pool's ¥1.22M of prizes
+is backed by 1,224,815 GP of collateral. On testnet anyone can charge GP for free
+from the shared `PointBank` (the **Charge** button); in production the bank would sell
+GP for yen / JPYC / USDC — the pools are generic over the coin. Only SUI for gas is
+needed from a faucet. The redemption window is 2 minutes so the collateral path can
+be shown live.
 
 ## Deployed (Sui testnet)
 
 | | ID |
 |---|---|
-| Package v1 (open + batch), immutable | `0x1efe6dd46ecb334c9dd3fc326c653fc996a222dcab79068ab38923d9ebd02b1c` |
-| Package v2 (adds blind), immutable | `0x39fb2e41f232ba160572e5994de7d31df6394d238de5d57d4d0c82bf330d46c9` |
-| Open pool (40 draws) | `0xcea03ebbdaa970e11c1792d5611beb4500113255064533a90e36e12fa031d6be` |
-| Blind pool (20 slots) | `0xe7e236d1831bcb8650bff1216568f26f9eabb21c1ccfa83efe46a552192e1114` |
-| Blind demo pool (6 slots) | `0x6ef8078d734b07be0f67b6e04d16837af2cd80f0e740dfe3a72b4f64608db3dc` |
-| Payment coin | Circle testnet USDC |
+| Package (pool + blind + gacha_point), immutable | `0xb086a10503300345c5192fcffcf72226661c9afed7fe199383f4dc0be166698a` |
+| Gacha Point coin type | `0xb086a10503300345c5192fcffcf72226661c9afed7fe199383f4dc0be166698a::gacha_point::GACHA_POINT` |
+| PointBank (charge GP) | `0x600366fa26e69cb1351765130f5758739ee9c24fdbda3bbee419644e62c6cce0` |
+| Open pool (40 draws, 32,000 GP) | `0x0c287a9067911a0cdca92f0b92040e061a4e4b40dabefbe3d2de33d6eb54cd9c` |
+| Batch break (12 spots) | `0xf6aacebbdc4c34154b83f0fab71dafcdbe7f855857e01bf7b617292b514e0c0b` |
+| Blind pool (20 slots) | `0x6a294eeb6b2d16030e74e948c88e934b8cd0af629cd61524a4a2d2ce508c9d73` |
+| Blind demo pool (6 slots) | `0xc8335abf4d4791db9ee914114c6d9f49c14b2b4db3df7b4fe4a54e5073937167` |
 | Seal key server | Mysten testnet committee `0xb012378c…1e98` (threshold 1, via aggregator) |
+
+An earlier deployment paid in Circle testnet USDC (1/1000 price scale); its IDs are in `docs/deployments/testnet-usdc-v1v2.json`.
 
 ## Data and AI disclosure
 

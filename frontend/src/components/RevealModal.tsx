@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TIERS, txUrl, unitsToYen, usdc, yen, type CardMeta, type Metadata } from "../lib/format";
+import { TIERS, txUrl, unitsToYen, yen, type CardMeta, type Metadata, amt, IS_POINTS } from "../lib/format";
 import { cn } from "../lib/utils";
 
 export type Reveal =
@@ -84,7 +84,7 @@ export function RevealModal({
         {reveal.phase === "done" && (
           <div className="w-full space-y-2 text-center text-sm">
             <div className="text-muted-foreground">
-              On-chain value {usdc(reveal.valueUnits)} USDC ({yen(unitsToYen(reveal.valueUnits, meta))} at demo scale)
+              On-chain value {amt(reveal.valueUnits)}{IS_POINTS ? "" : ` (${yen(unitsToYen(reveal.valueUnits, meta))} at demo scale)`}
               {reveal.remaining !== undefined && ` · ${reveal.remaining} draws left`}
             </div>
             {reveal.note && <div className="font-medium text-violet-300">{reveal.note}</div>}

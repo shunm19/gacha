@@ -1,10 +1,10 @@
 // Draw once from the blind pool with the operator key, then decrypt the slot
 // as its holder through Seal and check the on-chain commitment.
 import { SessionKey } from "@mysten/seal";
-import { Transaction, coinWithBalance } from "@mysten/sui/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import { BlindDrawnEvent, BlindPool } from "../frontend/src/lib/bcs.ts";
 import { makeSeal, openSlots } from "../frontend/src/lib/blind.ts";
-import { client, keypair, readDeployed } from "./lib.ts";
+import { client, keypair, payCoin, readDeployed } from "./lib.ts";
 
 const d = readDeployed();
 const b = d.blind!;
@@ -20,7 +20,7 @@ const tx = new Transaction();
 tx.moveCall({
   target: `${b.packageId}::blind::draw`,
   typeArguments: [d.coinType],
-  arguments: [tx.object(b.poolId!), coinWithBalance({ type: d.coinType, balance: BigInt(pool.price) }), tx.object.random(), tx.object.clock()],
+  arguments: [tx.object(b.poolId!), payCoin(tx, d, BigInt(pool.price)), tx.object.random(), tx.object.clock()],
 });
 const res = await client.signAndExecuteTransaction({ transaction: tx, signer: kp, include: { events: true } });
 if (res.$kind !== "Transaction") throw new Error(JSON.stringify(res.FailedTransaction?.status));

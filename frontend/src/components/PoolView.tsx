@@ -10,10 +10,10 @@ import {
   short,
   txUrl,
   unitsToYen,
-  usdc,
   yen,
   type CardMeta,
   type Metadata,
+  amt,
 } from "../lib/format";
 import { cn } from "../lib/utils";
 import { CardTile, TierBadge } from "./CardTile";
@@ -125,7 +125,7 @@ export function PoolView({ pkg, coinType, poolId, meta, byCard }: Props) {
               {stats.left === 0 ? "SOLD OUT" : busy ? "Drawing…" : "DRAW ×1"}
             </button>
             <div className="text-xs text-muted-foreground">
-              {usdc(stats.price)} USDC ≈ {yen(meta.price_jpy)} per draw
+              {amt(stats.price)} (= {yen(unitsToYen(stats.price, meta))}) per draw
               {!account && " · connect a wallet"}
             </div>
           </div>
@@ -153,7 +153,7 @@ export function PoolView({ pkg, coinType, poolId, meta, byCard }: Props) {
           />
           <Stat
             label="Collateral locked"
-            value={`${usdc(pool.collateral, 2)} USDC`}
+            value={amt(pool.collateral, 2)}
             sub={`${pct(n(pool.collateral_bps) / 10000, 0)} of each prize if not shipped`}
           />
         </div>

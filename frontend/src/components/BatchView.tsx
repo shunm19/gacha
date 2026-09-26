@@ -3,7 +3,7 @@ import { coinWithBalance } from "@mysten/sui/transactions";
 import { useState } from "react";
 import { DrawnEvent } from "../lib/bcs";
 import { useExec, useMySpots, usePool } from "../lib/chain";
-import { countdown, n, txUrl, usdc, yen, type CardMeta, type Metadata } from "../lib/format";
+import { countdown, n, txUrl, yen, type CardMeta, type Metadata, amt, unitsToYen } from "../lib/format";
 import { CardTile } from "./CardTile";
 import { useNow } from "./MyPulls";
 import { Stat } from "./PoolView";
@@ -88,7 +88,7 @@ export function BatchView({ pkg, coinType, poolId, meta, byCard }: Props) {
               }
               className="rounded-xl bg-gradient-to-r from-sky-400 to-indigo-500 px-6 py-3 font-black text-black disabled:opacity-40"
             >
-              BUY SPOT · {usdc(pool.price)} USDC
+              BUY SPOT · {amt(pool.price)}
             </button>
           )}
           {canSettle && (
@@ -124,7 +124,7 @@ export function BatchView({ pkg, coinType, poolId, meta, byCard }: Props) {
           label={pool.settled ? "Status" : "Sale ends in"}
           value={pool.settled ? "Settled" : left > 0 ? countdown(left) : "Ended"}
         />
-        <Stat label="Price per spot" value={`${usdc(pool.price)} USDC`} sub={yen(meta.price_jpy)} />
+        <Stat label="Price per spot" value={amt(pool.price)} sub={yen(unitsToYen(pool.price, meta))} />
         <Stat label="Your spots" value={String(mine.length)} />
       </div>
 

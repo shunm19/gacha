@@ -1,41 +1,17 @@
-import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { ConnectButton } from "@mysten/dapp-kit-react/ui";
 import { useState } from "react";
 import { BatchView } from "./components/BatchView";
 import { BlindView } from "./components/BlindView";
+import { Charge } from "./components/Charge";
 import { MyPulls } from "./components/MyPulls";
 import { Operator } from "./components/Operator";
 import { PoolView } from "./components/PoolView";
 import { Verify } from "./components/Verify";
 import { LOCAL, deployed } from "./config";
-import { useMetadata, useUsdcBalance } from "./lib/chain";
-import { usdc } from "./lib/format";
+import { useMetadata } from "./lib/chain";
 import { cn } from "./lib/utils";
 
 type Tab = "pool" | "blind" | "pulls" | "batch" | "verify" | "operator";
-
-function Balances({ coinType }: { coinType: string }) {
-  const account = useCurrentAccount();
-  const { data } = useUsdcBalance(coinType);
-  if (!account || !data) return null;
-  const low = data.usdc === 0n || data.sui === 0n;
-  return (
-    <div className="hidden items-center gap-3 text-xs text-muted-foreground md:flex">
-      <span>{usdc(data.usdc, 3)} USDC</span>
-      <span>{usdc(data.sui / 1000n, 3)} SUI</span>
-      {low && (
-        <span className="flex gap-2">
-          <a className="text-sky-400 underline" href={`https://faucet.sui.io/?address=${account.address}`} target="_blank" rel="noreferrer">
-            SUI faucet
-          </a>
-          <a className="text-sky-400 underline" href="https://faucet.circle.com" target="_blank" rel="noreferrer">
-            USDC faucet
-          </a>
-        </span>
-      )}
-    </div>
-  );
-}
 
 function App() {
   const [tab, setTab] = useState<Tab>("pool");
@@ -79,7 +55,7 @@ function App() {
               ))}
           </nav>
           <div className="ml-auto flex items-center gap-4">
-            {deployed && <Balances coinType={deployed.coinType} />}
+            {deployed && <Charge deployed={deployed} />}
             <ConnectButton />
           </div>
         </div>
@@ -118,8 +94,8 @@ function App() {
         )}
       </main>
       <footer className="container mx-auto px-4 pb-8 text-xs text-muted-foreground">
-        ETHGlobal Tokyo 2026 hackathon demo. Card images and prices from SNKRDUNK, used for demonstration only. On-chain
-        amounts are testnet USDC at 1/1000 of market price.
+        ETHGlobal Tokyo 2026 hackathon demo. Card images and prices from SNKRDUNK, used for demonstration only. Draws are
+        paid in Gacha Points (GP, 1 GP = ¥1), a coin issued by this package and free to charge on Sui testnet.
       </footer>
     </div>
   );

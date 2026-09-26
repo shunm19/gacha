@@ -7,7 +7,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.tsx";
 import { dAppKit } from "./dApp-kit.ts";
 
-const queryClient = new QueryClient();
+// Keep polling chain state even when the tab is not focused (demo screens).
+const queryClient = new QueryClient({ defaultOptions: { queries: { refetchIntervalInBackground: true } } });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

@@ -187,6 +187,9 @@ def main() -> None:
         "collateral_bps": args.collateral_bps,
         "redeem_window_ms": args.redeem_window_ms,
         "total_value": sum(c["value_usdc_units"] for c in cards),
+        # Gacha Point pools: 1 GP = 1 JPY, so values are the market prices themselves.
+        "values_jpy": [c["value_jpy"] for c in cards],
+        "price_jpy": price_jpy,
     }
     (ROOT / "scripts" / "pool_spec.json").write_text(json.dumps(spec, indent=2) + "\n")
 

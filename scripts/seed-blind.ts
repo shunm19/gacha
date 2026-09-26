@@ -11,11 +11,11 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { bcs } from "@mysten/sui/bcs";
-import { Transaction, coinWithBalance } from "@mysten/sui/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import { fromHex, toHex } from "@mysten/sui/utils";
 import { SealClient } from "@mysten/seal";
 import { sha256 } from "@noble/hashes/sha2.js";
-import { ROOT, client, createdObjects, keypair, readDeployed, writeDeployed } from "./lib.ts";
+import { ROOT, client, createdObjects, keypair, payCoin, readDeployed, writeDeployed } from "./lib.ts";
 
 export const SEAL = {
   // Mysten's decentralized (committee) key server on testnet, via its aggregator.
@@ -46,6 +46,7 @@ type Spec = {
   metadata_hash: string;
   collateral_bps: number;
   redeem_window_ms: number;
+  values_jpy: number[];
 };
 const spec = JSON.parse(readFileSync(resolve(ROOT, "scripts/pool_spec.json"), "utf8")) as Spec;
 const d = readDeployed();
@@ -62,9 +63,11 @@ const idx =
     ? [byTier[1][4], ...byTier[2].slice(0, 2), ...byTier[3].slice(0, 3)].slice(0, n)
     : [...byTier[0].slice(0, 2), ...byTier[1].slice(0, 3), ...byTier[2].slice(0, 4), ...byTier[3]].slice(0, n);
 const pick = <T,>(xs: T[]) => idx.map((i) => xs[i]);
-const values = pick(spec.values);
+const gp = !!d.bankId; // Gacha Points: 1 GP = 1 JPY
+const values = pick(gp ? spec.values_jpy : spec.values);
 const total = values.reduce((a, b) => a + b, 0);
-const price = Math.round(total / (n * Number(args["return-rate"])));
+const rawPrice = total / (n * Number(args["return-rate"]));
+const price = gp ? Math.round(rawPrice / 100) * 100 : Math.round(rawPrice);
 const collateral = Math.ceil((total * spec.collateral_bps) / 10_000);
 const saleEnd = Date.now() + (args.minutes ? Number(args.minutes) * 60_000 : Number(args.hours) * 3600_000);
 
@@ -83,12 +86,12 @@ tx1.moveCall({
     tx1.pure.vector("u8", Array.from(fromHex(spec.metadata_hash))),
     tx1.pure.u64(Number(args.tail)),
     tx1.pure.u64(saleEnd),
-    coinWithBalance({ type: d.coinType, balance: collateral }),
+    payCoin(tx1, d, collateral),
     tx1.pure.u64(spec.collateral_bps),
     tx1.pure.u64(spec.redeem_window_ms),
   ],
 });
-console.log(`creating blind pool: ${n} slots, price ${price / 1e6} USDC, collateral ${collateral / 1e6} USDC, tail ${args.tail}`);
+console.log(`creating blind pool: ${n} slots, price ${price}, collateral ${collateral} (${gp ? "GP" : "units"}), tail ${args.tail}`);
 const r1 = await client.signAndExecuteTransaction({ transaction: tx1, signer: kp, include: { effects: true, objectTypes: true } });
 if (r1.$kind !== "Transaction") throw new Error(JSON.stringify(r1.FailedTransaction?.status));
 await client.waitForTransaction({ digest: r1.Transaction.digest });

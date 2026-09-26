@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { useState } from "react";
 import { useExec, useOwnsObject, usePool, useRedemptions } from "../lib/chain";
-import { countdown, n, short, txUrl, usdc, type CardMeta } from "../lib/format";
+import { countdown, n, short, txUrl, type CardMeta, amt } from "../lib/format";
 import { useNow } from "./MyPulls";
 
 type Props = {
@@ -112,7 +112,7 @@ export function Operator({ pkg, coinType, poolId, adminCapId, byCard }: Props) {
       <section className="grid gap-3 md:grid-cols-2">
         <div className="rounded-xl border bg-white/[0.03] p-4">
           <div className="text-sm text-muted-foreground">Sales</div>
-          <div className="text-2xl font-semibold">{usdc(pool?.sales ?? 0)} USDC</div>
+          <div className="text-2xl font-semibold">{amt(pool?.sales ?? 0)}</div>
           <button
             disabled={!!busy || !pool || n(pool.sales) === 0}
             onClick={() =>
@@ -132,7 +132,7 @@ export function Operator({ pkg, coinType, poolId, adminCapId, byCard }: Props) {
         </div>
         <div className="rounded-xl border bg-white/[0.03] p-4">
           <div className="text-sm text-muted-foreground">Collateral</div>
-          <div className="text-2xl font-semibold">{usdc(pool?.collateral ?? 0)} USDC</div>
+          <div className="text-2xl font-semibold">{amt(pool?.collateral ?? 0)}</div>
           <div className="text-xs text-muted-foreground">
             Unlocks after the pool closes, one redemption window passes and nothing is left unshipped.
           </div>

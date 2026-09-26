@@ -3,9 +3,9 @@
 // request redemption, and (with --claim) wait out the window and claim.
 //   ORIPA_NETWORK=local npx tsx scripts/smoke.ts [--draws 3] [--redeem] [--claim]
 import { parseArgs } from "node:util";
-import { Transaction, coinWithBalance } from "@mysten/sui/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import { DrawnEvent, Pool, Pull, Redemption } from "../frontend/src/lib/bcs.ts";
-import { client, keypair, readDeployed } from "./lib.ts";
+import { client, keypair, payCoin, readDeployed } from "./lib.ts";
 
 const { values: args } = parseArgs({
   options: {
@@ -42,7 +42,7 @@ for (let i = 0; i < Number(args.draws); i++) {
     tx.moveCall({
       target: `${d.packageId}::pool::draw`,
       typeArguments: [d.coinType],
-      arguments: [tx.object(poolId), coinWithBalance({ type: d.coinType, balance: BigInt(pool.price) }), tx.object.random(), tx.object.clock()],
+      arguments: [tx.object(poolId), payCoin(tx, d, BigInt(pool.price)), tx.object.random(), tx.object.clock()],
     }),
   );
   const ev = t.events!.find((e) => e.eventType.endsWith("::pool::Drawn"))!;

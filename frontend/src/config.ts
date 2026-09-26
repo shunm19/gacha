@@ -4,6 +4,9 @@ export type Deployed = {
   packageId: string;
   publishDigest: string;
   coinType: string;
+  /** Gacha Point: { symbol: "GP", decimals: 0, yenPerUnit: 1 }. Absent = legacy USDC deployment. */
+  coin?: { symbol: string; decimals: number; yenPerUnit: number };
+  bankId?: string;
   operator: string;
   pools: Record<
     string,

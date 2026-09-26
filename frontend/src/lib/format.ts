@@ -1,3 +1,5 @@
+import { deployed } from "../config";
+
 export type CardMeta = {
   card_id: number;
   prize_id: number;
@@ -39,13 +41,18 @@ export const TIERS = [
 
 export const n = (x: string | number | bigint) => Number(x);
 
-/** USDC base units (6 decimals) -> "0.2133". */
-export const usdc = (units: string | number | bigint, digits = 4) =>
-  (n(units) / 1e6).toLocaleString("en-US", { maximumFractionDigits: digits });
+const COIN = deployed?.coin ?? { symbol: "USDC", decimals: 6, yenPerUnit: 0 };
+export const SYM = COIN.symbol;
+/** 1 unit = 1 yen (Gacha Point) — amounts need no conversion. */
+export const IS_POINTS = COIN.yenPerUnit === 1;
 
-/** On-chain USDC units -> market yen (undo the demo scale). */
+/** On-chain units -> "32,000 GP" / "0.2133 USDC". */
+export const amt = (units: string | number | bigint, digits = 4) =>
+  `${(n(units) / 10 ** COIN.decimals).toLocaleString("en-US", { maximumFractionDigits: COIN.decimals ? digits : 0 })} ${COIN.symbol}`;
+
+/** On-chain units -> market yen (GP is 1:1; legacy USDC undoes the demo scale). */
 export const unitsToYen = (units: string | number | bigint, meta: Metadata) =>
-  (n(units) / 1e6) * meta.usdjpy * meta.scale;
+  COIN.yenPerUnit ? n(units) * COIN.yenPerUnit : (n(units) / 1e6) * meta.usdjpy * meta.scale;
 
 export const yen = (x: number) => `¥${Math.round(x).toLocaleString("en-US")}`;
 

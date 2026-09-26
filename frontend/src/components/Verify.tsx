@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import type { Deployed } from "../config";
 import { useDrawFeed, usePool } from "../lib/chain";
-import { n, objUrl, pct, toHex, txUrl, usdc, type Metadata } from "../lib/format";
+import { n, objUrl, pct, toHex, txUrl, type Metadata, amt } from "../lib/format";
 
 type Body = {
   type?: number;
@@ -169,7 +169,7 @@ export function Verify({
 
       <Check ok={pool ? n(pool.collateral) * 10000 >= n(pool.remaining_value) * n(pool.collateral_bps) : undefined} title="Delivery is backed by collateral">
         <p>
-          Locked: {usdc(pool?.collateral ?? 0)} USDC for {usdc(pool?.total_value ?? 0)} USDC of prizes (
+          Locked: {amt(pool?.collateral ?? 0)} for {amt(pool?.total_value ?? 0)} of prizes (
           {pool ? pct(n(pool.collateral_bps) / 10000, 0) : "…"} per prize). Open shipping requests:{" "}
           {pool ? n(pool.outstanding) : "…"}.
         </p>

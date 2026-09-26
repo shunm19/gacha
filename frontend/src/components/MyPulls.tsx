@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { useEffect, useState } from "react";
 import { useExec, useMyPulls, usePool, useRedemptions } from "../lib/chain";
-import { countdown, n, txUrl, unitsToYen, usdc, yen, type CardMeta, type Metadata } from "../lib/format";
+import { countdown, n, txUrl, unitsToYen, yen, type CardMeta, type Metadata, amt } from "../lib/format";
 import { CardTile } from "./CardTile";
 
 export function useNow(intervalMs = 1000) {
@@ -122,7 +122,7 @@ export function MyPulls({ pkg, coinType, poolId, meta, byCard }: Props) {
                   </button>
                 ) : left > -5000 ? (
                   <span className="text-xs text-muted-foreground">
-                    Guaranteed: {usdc(due)} USDC ({yen(unitsToYen(due, meta))})
+                    Guaranteed: {amt(due)} ({yen(unitsToYen(due, meta))})
                   </span>
                 ) : (
                   <button
@@ -138,7 +138,7 @@ export function MyPulls({ pkg, coinType, poolId, meta, byCard }: Props) {
                     }
                     className="rounded-lg bg-emerald-400 px-3 py-1.5 text-xs font-bold text-black"
                   >
-                    Claim {usdc(due)} USDC from collateral
+                    Claim {amt(due)} from collateral
                   </button>
                 )}
               </div>
