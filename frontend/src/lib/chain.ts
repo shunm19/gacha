@@ -1,5 +1,6 @@
 import { useCurrentAccount, useCurrentClient, useDAppKit } from "@mysten/dapp-kit-react";
 import { Transaction } from "@mysten/sui/transactions";
+import { sha256 } from "@noble/hashes/sha2.js";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import {
@@ -23,7 +24,8 @@ export function useMetadata() {
     staleTime: Infinity,
     queryFn: async () => {
       const buf = await (await fetch("/pool-metadata.json")).arrayBuffer();
-      const hash = toHex(new Uint8Array(await crypto.subtle.digest("SHA-256", buf)));
+      // Pure-JS sha256: crypto.subtle is missing on plain-http origins (LAN / Tailscale IPs).
+      const hash = toHex(sha256(new Uint8Array(buf)));
       const meta = JSON.parse(new TextDecoder().decode(buf)) as Metadata;
       const byCard = new Map<number, CardMeta>(meta.cards.map((c) => [c.card_id, c]));
       return { meta, hash, byCard };
