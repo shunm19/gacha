@@ -19,3 +19,6 @@ frontend/public/cards/
 .DS_Store
 .sui-local/
 frontend/src/config/deployed.local.json
+
+# Submission screenshots include SNKRDUNK card images; keep them out of the public repo
+docs/submission/*.jpg
