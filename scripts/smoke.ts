@@ -1,14 +1,18 @@
 // End-to-end smoke test of the same calls the frontend makes, signed by the
 // operator key: draw, decode events/objects via BCS, list events, read ABI,
 // request redemption, and (with --claim) wait out the window and claim.
-//   ORIPA_NETWORK=local npx tsx scripts/smoke.ts [--draws 3] [--claim]
+//   ORIPA_NETWORK=local npx tsx scripts/smoke.ts [--draws 3] [--redeem] [--claim]
 import { parseArgs } from "node:util";
 import { Transaction, coinWithBalance } from "@mysten/sui/transactions";
 import { DrawnEvent, Pool, Pull, Redemption } from "../frontend/src/lib/bcs.ts";
 import { client, keypair, readDeployed } from "./lib.ts";
 
 const { values: args } = parseArgs({
-  options: { draws: { type: "string", default: "3" }, claim: { type: "boolean", default: false } },
+  options: {
+    draws: { type: "string", default: "3" },
+    redeem: { type: "boolean", default: false },
+    claim: { type: "boolean", default: false },
+  },
 });
 const d = readDeployed();
 const kp = keypair();
@@ -60,6 +64,7 @@ const pkg = await client.movePackageService.getPackage({ packageId: d.packageId 
 const fns = pkg.response.package?.modules.find((m) => m.name === "pool")?.functions ?? [];
 console.log(`ABI: ${fns.length} functions; draw entry=${fns.find((f) => f.name === "draw")?.isEntry} vis=${fns.find((f) => f.name === "draw")?.visibility}`);
 
+if (!args.redeem && !args.claim) process.exit(0);
 const target = pulls[0];
 const rt = await run((tx) =>
   tx.moveCall({
