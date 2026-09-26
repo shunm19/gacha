@@ -1,0 +1,5 @@
+[package]
+name = "oripa"
+edition = "2024"
+
+[dependencies]
