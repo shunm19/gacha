@@ -120,7 +120,7 @@ export function MyPulls({ pkg, coinType, poolId, meta, byCard }: Props) {
                   >
                     Confirm received
                   </button>
-                ) : left > 0 ? (
+                ) : left > -5000 ? (
                   <span className="text-xs text-muted-foreground">
                     Guaranteed: {usdc(due)} USDC ({yen(unitsToYen(due, meta))})
                   </span>

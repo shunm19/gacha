@@ -6,7 +6,7 @@ import { MyPulls } from "./components/MyPulls";
 import { Operator } from "./components/Operator";
 import { PoolView } from "./components/PoolView";
 import { Verify } from "./components/Verify";
-import { deployed } from "./config";
+import { LOCAL, deployed } from "./config";
 import { useMetadata, useUsdcBalance } from "./lib/chain";
 import { usdc } from "./lib/format";
 import { cn } from "./lib/utils";
@@ -58,7 +58,7 @@ function App() {
             <h1 className="text-lg font-black tracking-tight">
               Trustless <span className="text-amber-300">Oripa</span>
             </h1>
-            <span className="rounded bg-sky-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-sky-300">SUI TESTNET</span>
+            <span className="rounded bg-sky-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-sky-300">{LOCAL ? "LOCALNET" : "SUI TESTNET"}</span>
           </div>
           <nav className="flex gap-1">
             {tabs
