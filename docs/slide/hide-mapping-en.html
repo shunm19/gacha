@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hiding the box → card map from the operator</title>
+<style>
+  :root {
+    --ink: #172d43; --muted: #647180; --rule: #e5eaf0;
+    --blue: #4DA2FF; --blue-ink: #1769b5;
+    --commit: #8172c7; --seal: #4DA2FF; --random: #238f99; --reveal: #c77450; --tee: #2b8a57;
+    --A: #c43fa8; --op: #b1543a; --third: #6a55c9;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #fff; }
+  body { font-family: "Helvetica Neue", Arial, "Hiragino Sans", sans-serif; color: var(--ink); }
+  main { position: relative; width: 1920px; height: 1080px; padding: 44px 56px 0; }
+  h1 { margin: 0; font-size: 42px; line-height: 56px; font-weight: 800; }
+  h1 .brand { color: var(--blue-ink); }
+  .sub { margin: 4px 0 0; font-size: 21px; line-height: 32px; color: var(--muted); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 22px; }
+  .col { border: 1px solid var(--rule); border-radius: 18px; background: #fbfcfe; padding: 20px 24px; height: 560px; position: relative; }
+  .col h2 { margin: 0; font-size: 26px; line-height: 36px; display: flex; align-items: center; gap: 12px; }
+  .badge { font-size: 14px; line-height: 24px; padding: 0 10px; border-radius: 12px; color: #fff; font-weight: 700; }
+  .b-next { background: var(--blue-ink); } .b-prod { background: var(--tee); }
+  .lead { margin: 8px 0 14px; font-size: 18px; line-height: 28px; color: #3a4a5c; }
+  .flow { display: flex; align-items: center; gap: 10px; height: 150px; }
+  .node { border-radius: 14px; padding: 10px 12px; text-align: center; font-weight: 800; font-size: 20px; line-height: 26px; }
+  .node small { display: block; font-size: 13px; line-height: 18px; font-weight: 600; opacity: .9; }
+  .n-box { background: linear-gradient(160deg, #5b3fd1, #b04a8f); color: #fff; width: 96px; }
+  .n-mid { background: #eef0fb; color: var(--third); border: 2px dashed var(--third); width: 112px; }
+  .n-card { background: #fff; border: 3px solid var(--A); color: var(--A); width: 196px; white-space: nowrap; }
+  .arrow { flex: 1; position: relative; height: 96px; }
+  .arrow::before { content: ""; position: absolute; left: 0; right: 10px; top: 48px; border-top: 3px solid #b9c3cf; }
+  .arrow::after { content: ""; position: absolute; right: 2px; top: 42px; border-left: 12px solid #b9c3cf; border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+  .arrow .lbl { position: absolute; left: 0; right: 10px; top: 0; text-align: center; font-size: 15px; line-height: 20px; font-weight: 700; }
+  .arrow .lbl2 { position: absolute; left: 0; right: 10px; top: 58px; text-align: center; font-size: 13px; line-height: 18px; color: var(--muted); }
+  .l-op { color: var(--op); } .l-third { color: var(--third); }
+  .pill { display: inline-block; font-size: 12px; line-height: 20px; padding: 0 8px; border-radius: 10px; color: #fff; font-weight: 700; margin: 0 2px; }
+  .p-seal { background: var(--seal); } .p-commit { background: var(--commit); } .p-random { background: var(--random); } .p-tee { background: var(--tee); }
+  .who { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
+  .who div { border-radius: 10px; padding: 8px 12px; font-size: 15.5px; line-height: 22px; background: #eef1f5; color: #3d4a58; }
+  .who b { display: block; font-size: 13.5px; color: var(--muted); }
+  .who .no { background: #e6f5ec; color: #1d6b40; }
+  .who .warn { background: #fff5dc; color: #7a5a06; }
+  .tee { display: flex; gap: 12px; align-items: stretch; height: 164px; }
+  .in { width: 150px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+  .in div { border-radius: 10px; background: #fff; border: 1px solid var(--rule); padding: 8px 10px; font-size: 15px; line-height: 20px; font-weight: 700; text-align: center; }
+  .enclave { flex: 1; border: 3px solid var(--tee); border-radius: 16px; background: #f0faf4; padding: 10px 14px; }
+  .enclave .t { font-size: 15px; font-weight: 800; color: var(--tee); line-height: 22px; }
+  .enclave ol { margin: 6px 0 0; padding-left: 22px; font-size: 16px; line-height: 25px; }
+  .enclave .gone { color: #b3261e; font-weight: 800; }
+  .out { width: 140px; display: flex; align-items: center; }
+  .out div { border-radius: 12px; background: linear-gradient(160deg, #5b3fd1, #b04a8f); color: #fff; padding: 10px; font-size: 15px; line-height: 21px; font-weight: 700; text-align: center; }
+  table { position: absolute; left: 56px; right: 56px; top: 760px; width: calc(100% - 112px); border-collapse: separate; border-spacing: 0; font-size: 19px; }
+  th { text-align: left; font-size: 15px; color: var(--muted); font-weight: 700; padding: 0 16px 8px; border-bottom: 1px solid var(--rule); }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--rule); line-height: 28px; }
+  td:first-child { font-weight: 800; width: 300px; }
+  .yes { color: #b3261e; font-weight: 800; } .ok { color: #1d6b40; font-weight: 800; }
+  .st { display: inline-block; font-size: 14px; line-height: 24px; padding: 0 10px; border-radius: 12px; font-weight: 700; }
+  .s-done { background: #e6f5ec; color: #1d6b40; } .s-next { background: #e5f0fc; color: var(--blue-ink); } .s-prod { background: #e2f3e9; color: var(--tee); }
+  .foot { position: absolute; right: 56px; bottom: 24px; font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Hide the map from the operator too — <span class="brand">let someone else build "box → card"</span></h1>
+  <p class="sub">Seal alone isn't enough: whoever encrypts knows the plaintext. On-chain computation is public, so building the map on-chain can't hide it either.</p>
+
+  <div class="cols">
+    <section class="col">
+      <h2>Option 1 · Two-layer packing<span class="badge b-next">Next step · 3–4 h</span></h2>
+      <p class="lead">Split the map in two: the <b class="l-op">operator</b> builds one half, an <b class="l-third">independent third party</b> the other. Both go on-chain sealed + Seal-encrypted.</p>
+      <div class="flow">
+        <div class="node n-box">#7<small>drawn box</small></div>
+        <div class="arrow"><div class="lbl l-op">Operator's map</div><div class="lbl2"><span class="pill p-commit">sha256</span><span class="pill p-seal">Seal</span></div></div>
+        <div class="node n-mid">(4)<small>middle index</small></div>
+        <div class="arrow"><div class="lbl l-third">Third party's map</div><div class="lbl2"><span class="pill p-commit">sha256</span><span class="pill p-seal">Seal</span></div></div>
+        <div class="node n-card">A · Iono<small>card</small></div>
+      </div>
+      <p class="lead" style="margin-top:4px">The drawer opens layer 1 to learn (4), then proves "#7's seal opens to (4)" when asking for the layer-2 key. <b>That check runs inside the key servers only</b>, so (4) never lands on-chain.</p>
+      <div class="who">
+        <div class="no"><b>Operator</b>Knows #7 → (4), not what (4) is</div>
+        <div class="no"><b>Third party</b>Knows what (4) is, not which was drawn</div>
+        <div class="no"><b>Drawer</b>Own box only (same as today)</div>
+        <div class="warn"><b>Assumes</b>Operator and third party don't collude; key servers don't leak the middle index</div>
+      </div>
+    </section>
+
+    <section class="col">
+      <h2>Option 2 · Pack inside Nautilus (TEE)<span class="badge b-prod">Production</span></h2>
+      <p class="lead">Sui's <b>Nautilus</b> (a TEE whose computation is verifiable on-chain) builds the map, encrypts it, and <b>throws it away on the spot</b>.</p>
+      <div class="tee">
+        <div class="in"><div>Public lineup</div><div>Secret randomness<br>inside the TEE</div></div>
+        <div class="enclave">
+          <div class="t">TEE (AWS Nitro enclave) — opaque even to the operator</div>
+          <ol>
+            <li>Build the map with secret randomness</li>
+            <li>Encrypt each box with <span class="pill p-seal">Seal</span>, seal it with <span class="pill p-commit">sha256</span></li>
+            <li>Post on-chain with an attestation of the code that ran</li>
+            <li class="gone">Discard the map</li>
+          </ol>
+        </div>
+        <div class="out"><div>Only seals + ciphertexts remain<br>(same shape as today's pool)</div></div>
+      </div>
+      <div class="who" style="margin-top:22px">
+        <div class="no"><b>Operator</b>Knows nothing</div>
+        <div class="no"><b>Third party</b>Not needed</div>
+        <div class="no"><b>Drawer</b>Own box only (same as today)</div>
+        <div class="warn"><b>Assumes</b>TEE hardware + attested code; key servers</div>
+      </div>
+    </section>
+  </div>
+
+  <table>
+    <thead><tr><th></th><th>Does the operator know the drawn card?</th><th>Who you trust</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Today (one-layer packing)</td><td><span class="yes">Yes</span> (equalized at the last 3)</td><td>Operator doesn't buy up the tail; Seal key servers</td><td><span class="st s-done">Live on testnet</span></td></tr>
+      <tr><td>Option 1 · Two-layer packing</td><td><span class="ok">No</span></td><td>Operator and third party don't collude; key servers</td><td><span class="st s-next">Next step (two-layer contract)</span></td></tr>
+      <tr><td>Option 2 · Nautilus packing</td><td><span class="ok">Nobody knows</span></td><td>TEE (AWS Nitro) + attested code; key servers</td><td><span class="st s-prod">Production</span></td></tr>
+    </tbody>
+  </table>
+  <div class="foot">In every option: draws use sui::random, verification uses sha256 seals + reveal, shipping is backed by collateral · ETHGlobal Tokyo 2026 · Sui</div>
+</main>
+</body>
+</html>

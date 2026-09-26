@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, initial-scale=1">
+<title>Trustless Oripa — Before / After</title>
+<style>
+  :root {
+    --ink: #172d43;
+    --muted: #647180;
+    --before: #a27878;
+    --blue: #4DA2FF;
+    --blue-ink: #1769b5;
+    --rule: #e5eaf0;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1920px; height: 1080px; background: #fff; }
+  body {
+    font-family: "Hiragino Sans", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .slide { position: relative; width: 1920px; height: 1080px; }
+  .heading { position: absolute; top: 70px; left: 72px; right: 72px; }
+  h1 { margin: 0; font-size: 48px; font-weight: 700; line-height: 1.35; letter-spacing: -1.25px; white-space: nowrap; }
+  h1 .brand { color: var(--blue-ink); }
+  .subtitle { margin: 20px 0 0; color: var(--muted); font-size: 28px; font-weight: 400; line-height: 1.5; letter-spacing: .15px; }
+  .comparison { position: absolute; left: 72px; top: 224px; width: 1776px; height: 658px; }
+  .column-heading { position: absolute; top: 0; height: 62px; line-height: 40px; font-size: 30px; font-weight: 700; padding-left: 20px; border-bottom: 3px solid; white-space: nowrap; }
+  .column-heading .english { font-size: 24px; letter-spacing: 1.8px; margin-right: 18px; }
+  .column-heading.before { left: 168px; width: 728px; color: #725e63; border-color: #d6c7cb; }
+  .column-heading.after { left: 952px; width: 824px; color: var(--blue-ink); border-color: var(--blue); }
+  .column-heading.before .english { color: var(--before); }
+  .column-heading.after .english { color: var(--blue); }
+  .row { position: absolute; left: 0; width: 1776px; height: 116px; border-bottom: 1px solid var(--rule); }
+  .row-1 { top: 78px; }
+  .row-2 { top: 194px; }
+  .row-3 { top: 310px; }
+  .row-4 { top: 426px; }
+  .row-5 { top: 542px; border-bottom: 0; }
+  .row-label { position: absolute; left: 0; top: 50%; width: 152px; transform: translateY(-50%); font-size: 25px; line-height: 1.45; font-weight: 700; letter-spacing: .1px; }
+  .cell { position: absolute; top: 7px; height: 102px; font-size: 24px; line-height: 36px; font-weight: 400; letter-spacing: -.25px; }
+  .cell.before { left: 168px; width: 728px; color: #5f626b; }
+  .cell.after { left: 952px; width: 824px; background: #f1f7ff; border: 1px solid #e2eefc; border-radius: 12px; color: #244563; }
+  .symbol { position: absolute; left: 19px; top: 50%; transform: translateY(-50%); font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 23px; font-weight: 500; }
+  .before .symbol { color: #ad8588; }
+  .after .symbol { color: var(--blue); font-size: 27px; font-weight: 700; }
+  .copy { position: absolute; left: 59px; right: 18px; top: 50%; transform: translateY(-50%); margin: 0; }
+  .before .copy { left: 53px; right: 12px; }
+  .line { display: block; white-space: nowrap; }
+  strong { font-weight: 700; }
+  .before strong { color: #65515a; }
+  .after strong { color: #155c9c; }
+  .arrow { position: absolute; left: 896px; top: 50%; width: 56px; transform: translateY(-50%); text-align: center; color: #a1afbd; font-size: 30px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+  .technology { position: absolute; left: 72px; right: 72px; top: 916px; height: 62px; border-top: 1px solid var(--rule); padding-top: 20px; }
+  .technology h2 { position: absolute; left: 0; top: 27px; margin: 0; font-size: 22px; line-height: 28px; font-weight: 600; color: #50677c; }
+  .badges { position: absolute; left: 277px; top: 20px; margin: 0; padding: 0; list-style: none; white-space: nowrap; font-size: 0; }
+  .badges li { display: inline-block; vertical-align: top; margin-right: 10px; padding: 10px 17px; border: 1px solid #dce8f4; border-radius: 24px; background: #f8fbff; font-size: 20px; line-height: 23px; font-weight: 500; color: #386080; letter-spacing: -.15px; }
+  .badges li:last-child { margin-right: 0; }
+  .footnote { position: absolute; right: 72px; bottom: 64px; margin: 0; font-size: 17px; line-height: 22px; letter-spacing: .2px; color: #8a98a6; }
+  @page { size: 1920px 1080px; margin: 0; }
+  @media print { html, body, .slide { width: 1920px; height: 1080px; } }
+</style>
+</head>
+<body>
+<main class="slide" aria-labelledby="slide-title">
+  <header class="heading">
+    <h1 id="slide-title">Card gacha you don't have to trust — <span class="brand">Trustless Oripa on Sui</span></h1>
+    <p class="subtitle">Prizes, draws, what's left and payouts: from the operator's word to guarantees in code</p>
+  </header>
+
+  <section class="comparison" role="table" aria-label="Today's oripa vs Trustless Oripa">
+    <div role="row">
+      <div class="column-heading before" role="columnheader"><span class="english">BEFORE</span>Today's oripa</div>
+      <div class="column-heading after" role="columnheader"><span class="english">AFTER</span>Trustless Oripa</div>
+    </div>
+
+    <div class="row row-1" role="row">
+      <div class="row-label" role="rowheader">Contents</div>
+      <div class="cell before" role="cell"><span class="symbol" aria-hidden="true">✗</span><p class="copy"><span class="line">Hits left out or pulled, draws added —</span><span class="line"><strong>invisible from outside</strong></span></p></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="cell after" role="cell"><span class="symbol" aria-hidden="true">✓</span><p class="copy"><span class="line">Prizes and draw count <strong>fixed on-chain at creation.</strong></span><span class="line">No function can change them; package is <strong>immutable</strong></span></p></div>
+    </div>
+
+    <div class="row row-2" role="row">
+      <div class="row-label" role="rowheader">Draw</div>
+      <div class="cell before" role="cell"><span class="symbol" aria-hidden="true">✗</span><p class="copy"><span class="line">The operator's server decides. If it knows the</span><span class="line">order, <strong>insiders can buy the winning draw</strong></span></p></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="cell after" role="cell"><span class="symbol" aria-hidden="true">✓</span><p class="copy"><span class="line">Each draw picks from what's left with <strong>sui::random</strong>.</span><span class="line">No order exists — <strong>not even the operator knows the next</strong></span></p></div>
+    </div>
+
+    <div class="row row-3" role="row">
+      <div class="row-label" role="rowheader">What's left</div>
+      <div class="cell before" role="cell"><span class="symbol" aria-hidden="true">✗</span><p class="copy"><span class="line">Only the <strong>operator</strong> knows (Japan-style) /</span><span class="line">the display is <strong>self-reported</strong> (China-style)</span></p></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="cell after" role="cell"><span class="symbol" aria-hidden="true">✓</span><p class="copy"><span class="line"><strong>Seal</strong>: only the holder decrypts their own slot.</span><span class="line">Last few draws or close: <strong>anyone decrypts and verifies all</strong></span></p></div>
+    </div>
+
+    <div class="row row-4" role="row">
+      <div class="row-label" role="rowheader">Return<br>&amp; EV</div>
+      <div class="cell before" role="cell"><span class="symbol" aria-hidden="true">✗</span><p class="copy"><span class="line">Self-reported. Sep 17, 2026: 5 top operators sued</span><span class="line">over a <strong>false "100% total return"</strong> claim</span></p></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="cell after" role="cell"><span class="symbol" aria-hidden="true">✓</span><p class="copy"><span class="line">What's left, EV and return rate:</span><span class="line"><strong>anyone computes them from on-chain state</strong></span></p></div>
+    </div>
+
+    <div class="row row-5" role="row">
+      <div class="row-label" role="rowheader">Shipping</div>
+      <div class="cell before" role="cell"><span class="symbol" aria-hidden="true">✗</span><p class="copy"><span class="line">Won card never arrives? <strong>You just eat the loss</strong></span></p></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="cell after" role="cell"><span class="symbol" aria-hidden="true">✓</span><p class="copy"><span class="line">Not shipped by the deadline? The operator's collateral</span><span class="line"><strong>pays you automatically</strong> (no one's permission needed)</span></p></div>
+    </div>
+  </section>
+
+  <section class="technology" aria-labelledby="tech-title">
+    <h2 id="tech-title">Sui tech used</h2>
+    <ul class="badges">
+      <li>sui::random</li>
+      <li>Seal</li>
+      <li>Immutable package</li>
+      <li>Shared object escrow</li>
+      <li>Clock deadlines</li>
+      <li>Gacha Point (Coin, 1 GP = ¥1)</li>
+    </ul>
+  </section>
+  <p class="footnote">ETHGlobal Tokyo 2026 · Sui DeFi &amp; Payments</p>
+</main>
+</body>
+</html>

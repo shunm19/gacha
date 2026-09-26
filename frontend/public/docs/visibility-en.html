@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, initial-scale=1">
+<title>Who sees what, and when — Blind Oripa</title>
+<style>
+  :root {
+    --ink: #172d43;
+    --muted: #647180;
+    --before: #a27878;
+    --blue: #4DA2FF;
+    --blue-ink: #1769b5;
+    --rule: #e5eaf0;
+    --commit: #8172c7;
+    --seal: #4DA2FF;
+    --random: #238f99;
+    --immutable: #6e8199;
+    --reveal: #c77450;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #fff; }
+  body {
+    font-family: "Helvetica Neue", Arial, "Hiragino Sans", sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .slide { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #fff; }
+  .heading { position: absolute; left: 56px; top: 56px; width: 1808px; height: 116px; }
+  h1 { margin: 0; font-size: 44px; font-weight: 700; line-height: 60px; letter-spacing: -1px; white-space: nowrap; }
+  .brand { color: var(--blue-ink); }
+  .subtitle { position: absolute; top: 72px; left: 0; margin: 0; font-size: 24px; line-height: 36px; color: var(--muted); white-space: nowrap; }
+  .before-strip {
+    position: absolute; left: 56px; top: 184px; width: 1808px; height: 48px;
+    padding: 0 18px; border: 1px solid #eadfe1; border-radius: 8px;
+    background: #f7f2f3; color: #725e63; font-size: 20px; line-height: 46px; white-space: nowrap;
+  }
+  .before-strip strong { margin-right: 12px; color: var(--before); font-size: 19px; letter-spacing: 1.3px; }
+
+  /* Fixed geometry: 150px actor rail, 16px gutter, five columns and 12px gaps. */
+  .matrix { position: absolute; left: 56px; top: 258px; width: 1808px; height: 624px; }
+  .column-1 { left: 166px; width: 300px; }
+  .column-2 { left: 478px; width: 248px; }
+  .column-3 { left: 738px; width: 368px; }
+  .column-4 { left: 1118px; width: 324px; }
+  .column-5 { left: 1454px; width: 354px; }
+  .phase-row { position: absolute; left: 0; top: 0; width: 1808px; height: 64px; }
+  .after-label { position: absolute; left: 0; top: 13px; width: 150px; text-align: center; color: var(--blue); font-size: 20px; line-height: 32px; letter-spacing: 1.8px; font-weight: 700; }
+  .timeline { position: absolute; left: 182px; top: 29px; width: 1608px; height: 1px; background: #bedbfa; }
+  .timeline::after { content: ""; position: absolute; right: 0; top: -3px; width: 7px; height: 7px; border-top: 1px solid var(--blue); border-right: 1px solid var(--blue); transform: rotate(45deg); }
+  .phase { position: absolute; top: 0; height: 64px; border-bottom: 3px solid #dcecff; text-align: center; }
+  .phase-label { display: inline-block; position: relative; height: 58px; padding: 0 14px; background: #fff; color: var(--blue-ink); font-size: 25px; font-weight: 700; line-height: 58px; white-space: nowrap; }
+  .step { display: inline-block; margin-right: 10px; color: var(--blue); font-size: 31px; vertical-align: -1px; }
+  .phase-public { border-bottom-color: var(--blue); }
+  .actor-row { position: absolute; left: 0; width: 1808px; height: 176px; }
+  .row-operator { top: 76px; }
+  .row-owner { top: 262px; }
+  .row-others { top: 448px; }
+  .actor { position: absolute; left: 0; top: 0; width: 150px; height: 176px; text-align: center; }
+  .avatar { position: absolute; left: 51px; top: 34px; width: 48px; height: 48px; border: 1px solid #dce8f4; border-radius: 50%; background: #f1f7ff; color: #386080; font-size: 20px; font-weight: 700; line-height: 46px; }
+  .actor-name { position: absolute; left: 0; top: 94px; width: 150px; font-size: 22px; font-weight: 700; line-height: 30px; white-space: nowrap; }
+  .actor-detail { display: block; font-size: 15px; font-weight: 400; line-height: 25px; color: var(--muted); }
+  .cell { position: absolute; top: 0; height: 176px; border: 1px solid; border-radius: 12px; }
+  .visible { background: #f1f8f4; border-color: #e0eee6; }
+  .private { background: #f5f7fa; border-color: #e7ebf0; }
+  .partial { background: #fff9eb; border-color: #f1e7ce; }
+  .state { position: absolute; left: 17px; top: 19px; height: 25px; font-size: 17px; font-weight: 700; line-height: 25px; white-space: nowrap; }
+  .visible .state { color: #328263; }
+  .partial .state { color: #a7791c; }
+  .state-icon { display: inline-block; width: 21px; font-size: 16px; }
+  .private .state { top: 20px; height: 24px; padding: 0 8px; border-radius: 3px; background: #e8edf2; color: #647180; font-size: 14px; line-height: 24px; }
+  .private-icon { display: inline-block; width: 8px; height: 8px; margin-right: 7px; background: #8c99a6; vertical-align: 1px; }
+  .copy { position: absolute; left: 17px; top: 62px; height: 56px; margin: 0; font-size: 19px; line-height: 28px; font-weight: 400; }
+  .column-1 .copy { width: 264px; }
+  .column-2 .copy { width: 212px; }
+  .column-3 .copy { width: 332px; }
+  .column-4 .copy { width: 288px; }
+  .column-5 .copy { width: 318px; }
+  .copy.dense { font-size: 18px; }
+  .line { display: block; white-space: nowrap; }
+  .copy strong { font-weight: 700; }
+  .tags { position: absolute; left: 17px; bottom: 18px; height: 26px; white-space: nowrap; font-size: 0; }
+  .tag { display: inline-block; height: 26px; padding: 0 7px; border: 1px solid; border-radius: 14px; font-size: 14px; font-weight: 500; line-height: 24px; vertical-align: top; }
+  .tag::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--mechanism-color); vertical-align: 1px; }
+  .tag-join { display: inline-block; width: 13px; height: 26px; text-align: center; color: #8a98a6; font-size: 13px; line-height: 26px; vertical-align: top; }
+  .tag.commit { --mechanism-color: var(--commit); color: #6354a8; background: #f4f1fc; border-color: #dcd4f1; }
+  .tag.seal { --mechanism-color: var(--seal); color: var(--blue-ink); background: #edf6ff; border-color: #bedcfc; }
+  .tag.random { --mechanism-color: var(--random); color: #277e88; background: #eff8f9; border-color: #c2e2e5; }
+  .tag.reveal { --mechanism-color: var(--reveal); color: #a85938; background: #fcf3ed; border-color: #ebcfbd; }
+  .remaining-gap { border-color: #d4a54a; }
+  .callout { position: absolute; right: 14px; top: 19px; height: 25px; padding: 0 8px; border-radius: 4px; font-size: 12px; font-weight: 700; line-height: 25px; white-space: nowrap; }
+  .gap-label { color: #976712; background: #fff0c9; }
+  .equal-label { color: var(--blue-ink); background: #e4f1ff; }
+
+  .legend { position: absolute; left: 56px; top: 896px; width: 1808px; height: 96px; }
+  .mechanism { position: absolute; top: 0; height: 96px; border: 1px solid var(--rule); border-radius: 10px; background: #fff; }
+  .mechanism-commit { left: 0; width: 344px; --mechanism-color: var(--commit); }
+  .mechanism-seal { left: 356px; width: 406px; --mechanism-color: var(--seal); }
+  .mechanism-random { left: 774px; width: 358px; --mechanism-color: var(--random); }
+  .mechanism-immutable { left: 1144px; width: 330px; --mechanism-color: var(--immutable); }
+  .mechanism-reveal { left: 1486px; width: 322px; --mechanism-color: var(--reveal); }
+  .mechanism h2 { position: absolute; left: 14px; top: 11px; margin: 0; font-size: 18px; font-weight: 700; line-height: 25px; white-space: nowrap; }
+  .mechanism-dot { display: inline-block; width: 9px; height: 9px; margin-right: 9px; border-radius: 50%; background: var(--mechanism-color); vertical-align: 1px; }
+  .mechanism p { position: absolute; left: 14px; top: 41px; margin: 0; color: var(--muted); font-size: 16px; line-height: 22px; }
+  .footnote { position: absolute; right: 56px; top: 1004px; margin: 0; color: #8a98a6; font-size: 14px; line-height: 20px; white-space: nowrap; }
+  @page { size: 1920px 1080px; margin: 0; }
+  @media print { html, body, .slide { width: 1920px; height: 1080px; } }
+</style>
+</head>
+<body>
+<main class="slide" aria-labelledby="slide-title">
+  <header class="heading">
+    <h1 id="slide-title">Who sees what, and when — <span class="brand">Blind (Japan-style) Oripa</span></h1>
+    <p class="subtitle">Visibility is set by code and encryption (Seal), not by the operator</p>
+  </header>
+
+  <div class="before-strip"><strong>BEFORE</strong>Today: the operator always sees every slot and what's left, and can change it / buyers see only the draw count / nothing is verifiable, ever</div>
+
+  <section class="matrix" role="table" aria-label="Blind oripa: visibility by phase and actor" aria-colcount="6" aria-rowcount="4">
+    <div class="phase-row" role="row">
+      <div class="after-label" role="columnheader" aria-label="Actor">AFTER</div>
+      <div class="timeline" aria-hidden="true"></div>
+      <div class="phase column-1" role="columnheader"><span class="phase-label"><span class="step">①</span>Creation</span></div>
+      <div class="phase column-2" role="columnheader"><span class="phase-label"><span class="step">②</span>The draw</span></div>
+      <div class="phase column-3" role="columnheader"><span class="phase-label"><span class="step">③</span>Right after</span></div>
+      <div class="phase column-4 phase-public" role="columnheader"><span class="phase-label"><span class="step">④</span>Last 3 left</span></div>
+      <div class="phase column-5 phase-public" role="columnheader"><span class="phase-label"><span class="step">⑤</span>After close</span></div>
+    </div>
+
+    <div class="actor-row row-operator" role="row">
+      <div class="actor" role="rowheader"><span class="avatar" aria-hidden="true">Op</span><span class="actor-name">Operator</span></div>
+      <div class="cell visible column-1" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">●</span>Visible</span>
+        <p class="copy"><span class="line"><strong>Every slot's contents</strong></span><span class="line">(packed and encrypted them)</span></p>
+        <div class="tags"><span class="tag commit">sha256 commit</span><span class="tag-join">+</span><span class="tag seal">Seal encryption</span></div>
+      </div>
+      <div class="cell private column-2" role="cell">
+        <span class="state" aria-label="Hidden"><span class="private-icon" aria-hidden="true"></span>Hidden</span>
+        <p class="copy"><span class="line">Which slot comes next</span></p>
+        <div class="tags"><span class="tag random">sui::random</span></div>
+      </div>
+      <div class="cell partial column-3 remaining-gap" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">◐</span>Partial</span>
+        <span class="callout gap-label">Remaining gap</span>
+        <p class="copy dense"><span class="line">Knows the drawn slot → can <strong>infer</strong></span><span class="line">what's left (the only info edge left)</span></p>
+        <div class="tags"><span class="tag seal">Seal</span></div>
+      </div>
+      <div class="cell visible column-4" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">●</span>Visible</span>
+        <span class="callout equal-label">Cancels gap ③</span>
+        <p class="copy"><span class="line"><strong>Same info as everyone</strong></span><span class="line">(gap ③ is gone)</span></p>
+        <div class="tags"><span class="tag seal">Seal public policy</span></div>
+      </div>
+      <div class="cell visible column-5" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">●</span>Visible</span>
+        <p class="copy dense"><span class="line"><strong>Hiding costs:</strong> any slot not revealed in</span><span class="line">time pays the top prize from collateral</span></p>
+        <div class="tags"><span class="tag reveal">reveal + collateral</span></div>
+      </div>
+    </div>
+
+    <div class="actor-row row-owner" role="row">
+      <div class="actor" role="rowheader"><span class="avatar" aria-hidden="true">Me</span><span class="actor-name">Drawer</span></div>
+      <div class="cell partial column-1" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">◐</span>Partial</span>
+        <p class="copy"><span class="line">Only the lineup and draw count</span></p>
+        <div class="tags"><span class="tag commit">sha256 commit</span></div>
+      </div>
+      <div class="cell private column-2" role="cell">
+        <span class="state" aria-label="Hidden"><span class="private-icon" aria-hidden="true"></span>Hidden</span>
+        <p class="copy"><span class="line">Which slot comes next</span></p>
+        <div class="tags"><span class="tag random">sui::random</span></div>
+      </div>
+      <div class="cell visible column-3" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">●</span>Visible</span>
+        <p class="copy"><span class="line"><strong>Only their own slot,</strong></span><span class="line">decrypted on the spot</span></p>
+        <div class="tags"><span class="tag seal">Seal holder policy</span></div>
+      </div>
+      <div class="cell visible column-4" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">●</span>Visible</span>
+        <p class="copy"><span class="line"><strong>Every slot's contents</strong></span></p>
+        <div class="tags"><span class="tag seal">Seal public policy</span></div>
+      </div>
+      <div class="cell visible column-5" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">●</span>Visible</span>
+        <p class="copy"><span class="line">Checks every slot vs. its commitment</span><span class="line"><strong>and each prize used exactly once</strong></span></p>
+        <div class="tags"><span class="tag commit">sha256</span><span class="tag-join">+</span><span class="tag reveal">reveal</span></div>
+      </div>
+    </div>
+
+    <div class="actor-row row-others" role="row">
+      <div class="actor" role="rowheader"><span class="avatar" aria-hidden="true">All</span><span class="actor-name">Everyone else<span class="actor-detail">(buyers, public)</span></span></div>
+      <div class="cell partial column-1" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">◐</span>Partial</span>
+        <p class="copy"><span class="line">Only the lineup and draw count</span><span class="line">(slot → prize is encrypted)</span></p>
+        <div class="tags"><span class="tag commit">sha256 commit</span><span class="tag-join">+</span><span class="tag seal">Seal encryption</span></div>
+      </div>
+      <div class="cell private column-2" role="cell">
+        <span class="state" aria-label="Hidden"><span class="private-icon" aria-hidden="true"></span>Hidden</span>
+        <p class="copy"><span class="line">Which slot comes next</span></p>
+        <div class="tags"><span class="tag random">sui::random</span></div>
+      </div>
+      <div class="cell private column-3" role="cell">
+        <span class="state" aria-label="Hidden"><span class="private-icon" aria-hidden="true"></span>Hidden</span>
+        <p class="copy"><span class="line">Only the slot number;</span><span class="line">contents stay encrypted</span></p>
+        <div class="tags"><span class="tag seal">Seal</span></div>
+      </div>
+      <div class="cell visible column-4" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">●</span>Visible</span>
+        <p class="copy"><span class="line"><strong>Every slot</strong> (the last 3 are</span><span class="line">bought on equal terms)</span></p>
+        <div class="tags"><span class="tag seal">Seal public policy</span></div>
+      </div>
+      <div class="cell visible column-5" role="cell">
+        <span class="state"><span class="state-icon" aria-hidden="true">●</span>Visible</span>
+        <p class="copy"><span class="line">Anyone decrypts and verifies all</span></p>
+        <div class="tags"><span class="tag commit">sha256</span><span class="tag-join">+</span><span class="tag reveal">reveal</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="legend" aria-label="Five mechanisms">
+    <div class="mechanism mechanism-commit">
+      <h2><span class="mechanism-dot" aria-hidden="true"></span>sha256 commitment</h2>
+      <p><span class="line">Fixes each slot at creation;</span><span class="line">a swap fails the check</span></p>
+    </div>
+    <div class="mechanism mechanism-seal">
+      <h2><span class="mechanism-dot" aria-hidden="true"></span>Seal</h2>
+      <p><span class="line">Move functions decide who can decrypt</span><span class="line">(holder only / everyone at last 3 or close)</span></p>
+    </div>
+    <div class="mechanism mechanism-random">
+      <h2><span class="mechanism-dot" aria-hidden="true"></span>sui::random</h2>
+      <p><span class="line">Picks from what's left each draw;</span><span class="line">no order, operator can't predict</span></p>
+    </div>
+    <div class="mechanism mechanism-immutable">
+      <h2><span class="mechanism-dot" aria-hidden="true"></span>immutable</h2>
+      <p><span class="line">Rules (functions) can never</span><span class="line">be added or changed</span></p>
+    </div>
+    <div class="mechanism mechanism-reveal">
+      <h2><span class="mechanism-dot" aria-hidden="true"></span>reveal + collateral</h2>
+      <p><span class="line">Hide a result and the top prize</span><span class="line">is paid automatically</span></p>
+    </div>
+  </section>
+
+  <p class="footnote">Assumes the Seal key servers (threshold) don't collude with the operator · ETHGlobal Tokyo 2026 · Sui DeFi &amp; Payments</p>
+</main>
+</body>
+</html>
