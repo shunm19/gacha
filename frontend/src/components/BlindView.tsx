@@ -15,8 +15,19 @@ import { RevealModal, type Reveal } from "./RevealModal";
 
 type Props = { deployed: Deployed; meta: Metadata; byCard: Map<number, CardMeta> };
 
-const cardOf = (pool: BlindPoolT, byCard: Map<number, CardMeta>, prize: number) =>
-  byCard.get(n(pool.lineup[prize]?.card_id));
+// Name and image come from the metadata file; tier, value and grade come from
+// the pool itself, since the same card can sit in different tiers across pools.
+const cardOf = (pool: BlindPoolT, byCard: Map<number, CardMeta>, prize: number, md: Metadata): CardMeta | undefined => {
+  const onChain = pool.lineup[prize];
+  const card = onChain && byCard.get(n(onChain.card_id));
+  if (!onChain || !card) return undefined;
+  return {
+    ...card,
+    tier: onChain.tier,
+    value_jpy: unitsToYen(onChain.value, md),
+    grade: n(onChain.cert) > 0 ? "PSA 10" : "Raw (A)",
+  };
+};
 
 export function BlindView({ deployed, meta, byCard }: Props) {
   const b = deployed.blind!;
@@ -56,11 +67,11 @@ export function BlindView({ deployed, meta, byCard }: Props) {
     () =>
       pool
         ? pool.lineup
-            .map((c, prize) => ({ prize, card: byCard.get(n(c.card_id))! }))
+            .map((_, prize) => ({ prize, card: cardOf(pool, byCard, prize, meta)! }))
             .filter((x) => x.card)
             .sort((a, z) => a.card.tier - z.card.tier || z.card.value_jpy - a.card.value_jpy)
         : [],
-    [pool, byCard],
+    [pool, byCard, meta],
   );
 
   async function open(label: string, slots: { slot: number; pullId?: string }[], mode: "holder" | "public") {
@@ -109,7 +120,7 @@ export function BlindView({ deployed, meta, byCard }: Props) {
     const d = BlindDrawnEvent.parse(ev.bcs);
     setReveal({ phase: "pending", label: `You drew slot #${d.slot_id}. Sign once to decrypt it with Seal (only you can).` });
     const [o] = await open("peek", [{ slot: n(d.slot_id), pullId: d.pull_id }], "holder");
-    const card = o && cardOf(pool, byCard, o.prize);
+    const card = o && cardOf(pool, byCard, o.prize, meta);
     if (!o || !card) return setReveal(null);
     setPeeked((p) => ({ ...p, [o.slot]: o }));
     setReveal({
@@ -222,7 +233,7 @@ export function BlindView({ deployed, meta, byCard }: Props) {
             const slot = n(p.slot_id);
             const revealedPrize = pool.revealed[slot];
             const o = peeked[slot];
-            const card = revealedPrize !== NONE ? cardOf(pool, byCard, n(revealedPrize)) : o && cardOf(pool, byCard, o.prize);
+            const card = revealedPrize !== NONE ? cardOf(pool, byCard, n(revealedPrize), meta) : o && cardOf(pool, byCard, o.prize, meta);
             return (
               <div key={p.objectId} className="w-44 space-y-2">
                 {card ? (
@@ -434,7 +445,7 @@ export function BlindView({ deployed, meta, byCard }: Props) {
             </div>
             <div className="grid grid-cols-2 gap-1 text-xs sm:grid-cols-4">
               {publicOpen.map((o) => {
-                const c = cardOf(pool, byCard, o.prize);
+                const c = cardOf(pool, byCard, o.prize, meta);
                 return (
                   <div key={o.slot} className="flex items-center gap-1.5 rounded border px-2 py-1">
                     <span className="text-muted-foreground">#{o.slot}</span>
