@@ -57,6 +57,7 @@ export type Deployed = {
     createDigest?: string;
     sealDigest?: string;
     seal?: { serverObjectIds: string[]; threshold: number; aggregatorUrl?: string };
+    pools?: Record<string, { poolId: string; capId: string; createDigest: string; sealDigest: string }>;
   };
 };
 

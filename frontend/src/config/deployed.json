@@ -31,6 +31,20 @@
       ],
       "threshold": 1,
       "aggregatorUrl": "https://seal-aggregator-testnet.mystenlabs.com"
+    },
+    "pools": {
+      "main": {
+        "poolId": "0xe7e236d1831bcb8650bff1216568f26f9eabb21c1ccfa83efe46a552192e1114",
+        "capId": "0xc9c31b967fa88ffa9822c8e61b151b273e270f777ef2433c1d08da6501c0b5ab",
+        "createDigest": "25FBqnmRQEWGiEKLYCAQ7oLWaDEiiyqnn7WmKYZqe8sf",
+        "sealDigest": "Hvvri2GivKX1tLDUESZwQnQvTSgsAQ7TdsbeQ4euABg6"
+      },
+      "mini": {
+        "poolId": "0x6ef8078d734b07be0f67b6e04d16837af2cd80f0e740dfe3a72b4f64608db3dc",
+        "capId": "0x17ecf72992f1dd76083707ed3f7761d14511ddba35bb8725c9ee24200d017657",
+        "createDigest": "71rskeSb78zPRyKD39equzfP3QRKrm6jQGKzFY5MqmFs",
+        "sealDigest": "9WmnFAF9E9WEhfP7jR5iqTajM9drq3M52ktypEuNts9g"
+      }
     }
   }
 }

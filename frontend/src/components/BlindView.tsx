@@ -21,7 +21,10 @@ const cardOf = (pool: BlindPoolT, byCard: Map<number, CardMeta>, prize: number) 
 export function BlindView({ deployed, meta, byCard }: Props) {
   const b = deployed.blind!;
   const pkg = b.packageId;
-  const poolId = b.poolId!;
+  const pools = b.pools ?? { main: { poolId: b.poolId!, capId: b.capId!, createDigest: b.createDigest!, sealDigest: b.sealDigest! } };
+  const [key, setKey] = useState(Object.keys(pools).includes("mini") ? "mini" : "main");
+  const entry = pools[key] ?? Object.values(pools)[0];
+  const poolId = entry.poolId;
   const coinType = deployed.coinType;
   const client = useCurrentClient();
   const account = useCurrentAccount();
@@ -31,7 +34,7 @@ export function BlindView({ deployed, meta, byCard }: Props) {
   const { data: feed } = useBlindFeed(pkg, poolId);
   const { data: myRedemptions } = useBlindRedemptions(pkg, poolId, account?.address);
   const { data: allRedemptions } = useBlindRedemptions(pkg, poolId);
-  const { data: isOperator } = useOwnsObject(b.capId);
+  const { data: isOperator } = useOwnsObject(entry.capId);
   const { seal, sessionKey } = useSeal(pkg, b.seal);
   const { exec, busy, error } = useExec();
   const [reveal, setReveal] = useState<Reveal | null>(null);
@@ -40,6 +43,13 @@ export function BlindView({ deployed, meta, byCard }: Props) {
   const [sealError, setSealError] = useState<string | null>(null);
   const [sealBusy, setSealBusy] = useState<string | null>(null);
   const [tracking, setTracking] = useState<Record<string, string>>({});
+
+  const switchPool = (k: string) => {
+    setKey(k);
+    setPeeked({});
+    setPublicOpen(null);
+    setSealError(null);
+  };
 
   const isPublic = !!pool && pool.sealed && (pool.closed || pool.remaining.length <= n(pool.reveal_tail));
   const lineup = useMemo(
@@ -128,6 +138,19 @@ export function BlindView({ deployed, meta, byCard }: Props) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-3xl">
+          {Object.keys(pools).length > 1 && (
+            <div className="mb-2 flex gap-1">
+              {Object.keys(pools).map((k) => (
+                <button
+                  key={k}
+                  onClick={() => switchPool(k)}
+                  className={`rounded-md px-2.5 py-1 text-xs ${k === key ? "bg-violet-500/30 font-semibold text-violet-200" : "text-muted-foreground hover:bg-white/5"}`}
+                >
+                  {k === "mini" ? "6-slot demo pool" : k === "main" ? "20-slot pool" : k}
+                </button>
+              ))}
+            </div>
+          )}
           <h2 className="text-2xl font-bold">{pool.name}</h2>
           <p className="text-sm text-muted-foreground">
             Japanese format: you only see how many draws are left. Which slot holds which card is committed on-chain and
@@ -166,8 +189,12 @@ export function BlindView({ deployed, meta, byCard }: Props) {
         />
         <Stat
           label="Revealed on-chain"
-          value={`${n(pool.revealed_count)} / ${total - left}`}
-          sub={pool.closed ? `hidden past ${countdown(n(pool.closed_at_ms) + n(pool.window_ms) - now)} pays the top prize` : "drawn slots"}
+          value={`${n(pool.revealed_count)} / ${total}`}
+          sub={
+            pool.closed
+              ? `a drawn slot still hidden in ${countdown(n(pool.closed_at_ms) + n(pool.window_ms) - now)} pays the top prize`
+              : `slots with a published result · ${total - left} drawn`
+          }
         />
         <Stat
           label="Collateral locked"
@@ -331,7 +358,7 @@ export function BlindView({ deployed, meta, byCard }: Props) {
                         target: `${pkg}::blind::mark_shipped`,
                         typeArguments: [coinType],
                         arguments: [
-                          tx.object(b.capId!),
+                          tx.object(entry.capId),
                           tx.object(poolId),
                           tx.object(r.objectId),
                           tx.pure.string(tracking[r.objectId]),
@@ -415,14 +442,23 @@ export function BlindView({ deployed, meta, byCard }: Props) {
         <h3 className="mb-2 font-semibold">Announced lineup ({total} cards — positions hidden)</h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-10">
           {lineup.map(({ prize, card }) => {
+            // Positions only become visible once a slot is revealed on-chain.
             const slot = pool.revealed.findIndex((p) => p !== NONE && n(p) === prize);
-            return <CardTile key={prize} card={card} drawn={slot >= 0} label={slot >= 0 ? `SLOT #${slot}` : undefined} />;
+            const drawn = slot >= 0 && pool.drawn[slot];
+            return (
+              <CardTile
+                key={prize}
+                card={card}
+                drawn={drawn}
+                label={slot < 0 ? undefined : drawn ? `SLOT #${slot} · DRAWN` : `SLOT #${slot} · STILL IN`}
+              />
+            );
           })}
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
           Commitments: {pool.commitments.length} · ciphertexts {pool.ciphertexts[0]?.length ?? 0} bytes each · e.g. slot
           #0 = sha256 {toHex(Uint8Array.from(pool.commitments[0] ?? [])).slice(0, 16)}… ·{" "}
-          <a className="text-sky-400 underline" href={txUrl(b.sealDigest ?? "")} target="_blank" rel="noreferrer">
+          <a className="text-sky-400 underline" href={txUrl(entry.sealDigest)} target="_blank" rel="noreferrer">
             seal tx
           </a>{" "}
           · recent draws: {(feed ?? []).slice(0, 8).map((d) => `#${d.slot_id}`).join(" ")}

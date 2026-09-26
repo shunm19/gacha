@@ -30,6 +30,10 @@ const { values: args } = parseArgs({
     tail: { type: "string", default: "3" },
     hours: { type: "string", default: "12" },
     "return-rate": { type: "string", default: "0.95" },
+    // "mini": a cheap 6-slot lineup (1 A, 2 B, 3 C) to show the full lifecycle in a demo.
+    lineup: { type: "string", default: "full" },
+    key: { type: "string", default: "main" },
+    minutes: { type: "string" },
   },
 });
 
@@ -53,13 +57,16 @@ const kp = keypair();
 const n = Number(args.count);
 const all = spec.card_ids.map((_, i) => i);
 const byTier = [0, 1, 2, 3].map((t) => all.filter((i) => spec.tiers[i] === t));
-const idx = [...byTier[0].slice(0, 2), ...byTier[1].slice(0, 3), ...byTier[2].slice(0, 4), ...byTier[3]].slice(0, n);
+const idx =
+  args.lineup === "mini"
+    ? [byTier[1][4], ...byTier[2].slice(0, 2), ...byTier[3].slice(0, 3)].slice(0, n)
+    : [...byTier[0].slice(0, 2), ...byTier[1].slice(0, 3), ...byTier[2].slice(0, 4), ...byTier[3]].slice(0, n);
 const pick = <T,>(xs: T[]) => idx.map((i) => xs[i]);
 const values = pick(spec.values);
 const total = values.reduce((a, b) => a + b, 0);
 const price = Math.round(total / (n * Number(args["return-rate"])));
 const collateral = Math.ceil((total * spec.collateral_bps) / 10_000);
-const saleEnd = Date.now() + Number(args.hours) * 3600_000;
+const saleEnd = Date.now() + (args.minutes ? Number(args.minutes) * 60_000 : Number(args.hours) * 3600_000);
 
 // --- 1. create ---
 const tx1 = new Transaction();
@@ -67,7 +74,7 @@ tx1.moveCall({
   target: `${pkg}::blind::create_blind_pool`,
   typeArguments: [d.coinType],
   arguments: [
-    tx1.pure.string(`${spec.name.replace("#1", "")}Blind (JP format)`),
+    tx1.pure.string(`${spec.name.replace("#1", "")}Blind${args.lineup === "mini" ? " Mini" : ""} (JP format)`),
     tx1.pure.u64(price),
     tx1.pure.vector("u64", pick(spec.card_ids)),
     tx1.pure.vector("u64", pick(spec.certs)),
@@ -145,12 +152,11 @@ if (r2.$kind !== "Transaction") throw new Error(JSON.stringify(r2.FailedTransact
 await client.waitForTransaction({ digest: r2.Transaction.digest });
 console.log(`sealed in ${r2.Transaction.digest}`);
 
+const entry = { poolId, capId, createDigest: r1.Transaction.digest, sealDigest: r2.Transaction.digest };
 d.blind = {
   ...d.blind,
-  poolId,
-  capId,
-  createDigest: r1.Transaction.digest,
-  sealDigest: r2.Transaction.digest,
+  ...(args.key === "main" ? entry : {}),
+  pools: { ...(d.blind.pools ?? {}), [args.key]: entry },
   seal: { serverObjectIds: SEAL.serverObjectIds, threshold: SEAL.threshold, aggregatorUrl: SEAL.aggregatorUrl },
 };
 writeDeployed(d);
