@@ -48,6 +48,16 @@ export type Deployed = {
     string,
     { poolId: string; adminCapId: string; mode: "instant" | "batch"; createDigest: string }
   >;
+  /** Package v2 (adds the blind module) and its Seal-backed pool. */
+  blind?: {
+    packageId: string;
+    publishDigest: string;
+    poolId?: string;
+    capId?: string;
+    createDigest?: string;
+    sealDigest?: string;
+    seal?: { serverObjectIds: string[]; threshold: number; aggregatorUrl?: string };
+  };
 };
 
 export function readDeployed(): Deployed {

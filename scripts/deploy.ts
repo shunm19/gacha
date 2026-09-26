@@ -5,7 +5,11 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { Transaction } from "@mysten/sui/transactions";
-import { DEPLOYED, ROOT, SUI_CONFIG, USDC_TYPE, client, createdObjects, keypair, writeDeployed } from "./lib.ts";
+import { existsSync } from "node:fs";
+import { DEPLOYED, ROOT, SUI_CONFIG, USDC_TYPE, client, createdObjects, keypair, readDeployed, writeDeployed } from "./lib.ts";
+
+// --blind: publish a new package version for the blind pool, keeping existing pools.
+const BLIND = process.argv.includes("--blind");
 
 const kp = keypair();
 const build = JSON.parse(
@@ -36,6 +40,12 @@ console.log(`package ${pkg.objectId}  (immutable)  tx ${t.digest}`);
 for (const o of created) console.log(`  created ${o.type}  ${o.id}`);
 
 mkdirSync(dirname(DEPLOYED), { recursive: true });
+if (BLIND && existsSync(DEPLOYED)) {
+  const d = readDeployed();
+  d.blind = { packageId: pkg.objectId, publishDigest: t.digest };
+  writeDeployed(d);
+  process.exit(0);
+}
 writeDeployed({
   network: "testnet",
   packageId: pkg.objectId,

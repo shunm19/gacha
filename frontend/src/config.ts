@@ -9,6 +9,15 @@ export type Deployed = {
     string,
     { poolId: string; adminCapId: string; mode: "instant" | "batch"; createDigest: string }
   >;
+  blind?: {
+    packageId: string;
+    publishDigest: string;
+    poolId?: string;
+    capId?: string;
+    createDigest?: string;
+    sealDigest?: string;
+    seal?: { serverObjectIds: string[]; threshold: number; aggregatorUrl?: string };
+  };
 };
 
 export const LOCAL = import.meta.env.VITE_ORIPA_NETWORK === "local";

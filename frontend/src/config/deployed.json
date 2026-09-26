@@ -17,5 +17,20 @@
       "mode": "batch",
       "createDigest": "4s8XcfLKQ9iqm8we1zGPCB75GzGt928qXqwPQhFSwr7T"
     }
+  },
+  "blind": {
+    "packageId": "0x39fb2e41f232ba160572e5994de7d31df6394d238de5d57d4d0c82bf330d46c9",
+    "publishDigest": "H7vE2bP8ZXaJsGc16zCDSEgqxexDHgwQgzryedWu7Vfm",
+    "poolId": "0xe7e236d1831bcb8650bff1216568f26f9eabb21c1ccfa83efe46a552192e1114",
+    "capId": "0xc9c31b967fa88ffa9822c8e61b151b273e270f777ef2433c1d08da6501c0b5ab",
+    "createDigest": "25FBqnmRQEWGiEKLYCAQ7oLWaDEiiyqnn7WmKYZqe8sf",
+    "sealDigest": "Hvvri2GivKX1tLDUESZwQnQvTSgsAQ7TdsbeQ4euABg6",
+    "seal": {
+      "serverObjectIds": [
+        "0xb012378c9f3799fb5b1a7083da74a4069e3c3f1c93de0b27212a5799ce1e1e98"
+      ],
+      "threshold": 1,
+      "aggregatorUrl": "https://seal-aggregator-testnet.mystenlabs.com"
+    }
   }
 }
