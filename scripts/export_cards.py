@@ -111,7 +111,11 @@ def main() -> None:
     ap.add_argument("--return-rate", type=float, default=0.95)
     ap.add_argument("--redeem-window-ms", type=int, default=120_000)
     ap.add_argument("--collateral-bps", type=int, default=10_000)
+    # Lineup size per tier: S jackpot(>=300k), S(100k-300k), A, B, C.
+    ap.add_argument("--plan", choices=["40", "100"], default="40")
+    ap.add_argument("--spec-out", default="scripts/pool_spec.json")
     args = ap.parse_args()
+    counts = {"40": (1, 2, 5, 8, 24), "100": (1, 2, 7, 20, 70)}[args.plan]
 
     src = latest("data/snkrdunk/psa10_prices_*.json")
     products = json.loads(src.read_text())["products"]
@@ -135,14 +139,14 @@ def main() -> None:
     used: set[int] = set()
     tiers = [
         # S: one jackpot, two big hits
-        [(p, 0, True) for p in pick(graded, 300_000, 10**9, 1, "psa10_cleaned_price", used)],
-        [(p, 0, True) for p in pick(graded, 100_000, 300_000, 2, "psa10_cleaned_price", used)],
+        [(p, 0, True) for p in pick(graded, 300_000, 10**9, counts[0], "psa10_cleaned_price", used)],
+        [(p, 0, True) for p in pick(graded, 100_000, 300_000, counts[1], "psa10_cleaned_price", used)],
         # A: mid hits
-        [(p, 1, True) for p in pick(graded, 30_000, 100_000, 5, "psa10_cleaned_price", used)],
+        [(p, 1, True) for p in pick(graded, 30_000, 100_000, counts[2], "psa10_cleaned_price", used)],
         # B: small wins
-        [(p, 2, True) for p in pick(graded, 3_000, 10_000, 8, "psa10_cleaned_price", used)],
+        [(p, 2, True) for p in pick(graded, 3_000, 10_000, counts[3], "psa10_cleaned_price", used)],
         # C: raw commons (SNKRDUNK's floor is ~1,000 JPY)
-        [(p, 3, False) for p in pick(raw, 1_000, 2_000, 24, "cond_a_cleaned_price", used)],
+        [(p, 3, False) for p in pick(raw, 1_000, 2_000, counts[4], "cond_a_cleaned_price", used)],
     ]
     cards = [card_meta(p, tier, graded_) for group in tiers for (p, tier, graded_) in group]
 
@@ -157,7 +161,7 @@ def main() -> None:
 
     metadata = {
         "name": "Trustless Oripa #1",
-        "description": "40-draw Pokémon card oripa. Contents fixed on-chain, drawn with Sui randomness.",
+        "description": f"{len(cards)}-draw Pokémon card oripa. Contents fixed on-chain, drawn with Sui randomness.",
         "currency": "USDC (Sui testnet)",
         "usdjpy": USDJPY,
         "scale": SCALE,
@@ -191,7 +195,7 @@ def main() -> None:
         "values_jpy": [c["value_jpy"] for c in cards],
         "price_jpy": price_jpy,
     }
-    (ROOT / "scripts" / "pool_spec.json").write_text(json.dumps(spec, indent=2) + "\n")
+    (ROOT / args.spec_out).write_text(json.dumps(spec, indent=2) + "\n")
 
     print(f"source: {src.name}  cards: {len(cards)}  sha256: {meta_hash[:16]}…")
     for c in cards:

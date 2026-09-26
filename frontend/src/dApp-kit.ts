@@ -9,7 +9,8 @@ const GRPC_URLS = {
 
 // VITE_ORIPA_NETWORK=local points the app at `sui start` for development.
 export const dAppKit = createDAppKit({
-  enableBurnerWallet: import.meta.env.DEV,
+  // Testnet demo: keep the burner wallet in production too so anyone can try it.
+  enableBurnerWallet: true,
   networks: LOCAL ? ["localnet"] : ["testnet"],
   defaultNetwork: LOCAL ? "localnet" : "testnet",
   createClient(network) {

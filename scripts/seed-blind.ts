@@ -6,6 +6,7 @@
 // Secrets are kept in .sui/blind-<pool>.json (gitignored) so the operator can
 // reveal after close; anyone can also recover them via Seal once public.
 //   npx tsx scripts/seed-blind.ts [--count 20] [--tail 3] [--hours 12]
+//   npx tsx scripts/seed-blind.ts --spec scripts/pool_spec_100.json --lineup all --count 100 --hours 168
 import { randomBytes, randomInt } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -34,6 +35,7 @@ const { values: args } = parseArgs({
     lineup: { type: "string", default: "full" },
     key: { type: "string", default: "main" },
     minutes: { type: "string" },
+    spec: { type: "string", default: "scripts/pool_spec.json" },
   },
 });
 
@@ -48,7 +50,7 @@ type Spec = {
   redeem_window_ms: number;
   values_jpy: number[];
 };
-const spec = JSON.parse(readFileSync(resolve(ROOT, "scripts/pool_spec.json"), "utf8")) as Spec;
+const spec = JSON.parse(readFileSync(resolve(ROOT, args.spec!), "utf8")) as Spec;
 const d = readDeployed();
 if (!d.blind) throw new Error("run `npx tsx scripts/deploy.ts --blind` first");
 const pkg = d.blind.packageId;
@@ -59,7 +61,9 @@ const n = Number(args.count);
 const all = spec.card_ids.map((_, i) => i);
 const byTier = [0, 1, 2, 3].map((t) => all.filter((i) => spec.tiers[i] === t));
 const idx =
-  args.lineup === "mini"
+  args.lineup === "all"
+    ? all.slice(0, n)
+    : args.lineup === "mini"
     ? [byTier[1][4], ...byTier[2].slice(0, 2), ...byTier[3].slice(0, 3)].slice(0, n)
     : [...byTier[0].slice(0, 2), ...byTier[1].slice(0, 3), ...byTier[2].slice(0, 4), ...byTier[3]].slice(0, n);
 const pick = <T,>(xs: T[]) => idx.map((i) => xs[i]);

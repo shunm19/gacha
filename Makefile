@@ -1,7 +1,7 @@
 # All sui CLI calls use the project-local testnet config in .sui/ (never ~/.sui).
 SUI := sui client --client.config .sui/client.yaml
 
-.PHONY: wallet address balance test build cards deploy seed seed-batch dev
+.PHONY: wallet address balance test build cards deploy seed seed-batch dev pages
 wallet:        ## create the throwaway testnet key in .sui/
 	@test -f .sui/client.yaml || (mkdir -p .sui && $(SUI) -y active-address > .sui/init.log 2>&1)
 	@$(SUI) active-address
@@ -23,3 +23,5 @@ seed-batch:    ## batch pool (sale ends in 20 min)
 	npx tsx scripts/seed.ts --batch --minutes 20 --count 12
 dev:
 	cd frontend && npm run dev -- --port 5173
+pages:         ## build the frontend and deploy it to Cloudflare Pages (trustless-oripa.pages.dev)
+	cd frontend && npm run build && npx wrangler@4 pages deploy dist --project-name trustless-oripa --branch main --commit-dirty=true

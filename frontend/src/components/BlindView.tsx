@@ -22,7 +22,7 @@ export function BlindView({ deployed, meta, byCard }: Props) {
   const b = deployed.blind!;
   const pkg = b.packageId;
   const pools = b.pools ?? { main: { poolId: b.poolId!, capId: b.capId!, createDigest: b.createDigest!, sealDigest: b.sealDigest! } };
-  const [key, setKey] = useState(Object.keys(pools).includes("mini") ? "mini" : "main");
+  const [key, setKey] = useState(Object.keys(pools).includes("main") ? "main" : Object.keys(pools)[0]);
   const entry = pools[key] ?? Object.values(pools)[0];
   const poolId = entry.poolId;
   const coinType = deployed.coinType;
@@ -146,7 +146,7 @@ export function BlindView({ deployed, meta, byCard }: Props) {
                   onClick={() => switchPool(k)}
                   className={`rounded-md px-2.5 py-1 text-xs ${k === key ? "bg-violet-500/30 font-semibold text-violet-200" : "text-muted-foreground hover:bg-white/5"}`}
                 >
-                  {k === "mini" ? "6-slot demo pool" : k === "main" ? "20-slot pool" : k}
+                  {k === "mini" ? "6-slot pool (already public — try the verification)" : k === "main" ? "100-slot pool" : k}
                 </button>
               ))}
             </div>
