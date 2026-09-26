@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mysten/dapp-kit-react": "^2.1.35",
+    "@mysten/seal": "^1.4.16",
     "@mysten/sui": "^2.33.1",
     "@nanostores/react": "^1.0.0",
     "@noble/hashes": "^2.4.0",
