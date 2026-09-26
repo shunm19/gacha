@@ -1,0 +1,17 @@
+// deployed.json is written by scripts/deploy.ts and scripts/seed.ts.
+export type Deployed = {
+  network: "testnet";
+  packageId: string;
+  publishDigest: string;
+  coinType: string;
+  operator: string;
+  pools: Record<
+    string,
+    { poolId: string; adminCapId: string; mode: "instant" | "batch"; createDigest: string }
+  >;
+};
+
+const found = import.meta.glob<{ default: Deployed }>("./config/deployed.json", { eager: true });
+export const deployed: Deployed | null = found["./config/deployed.json"]?.default ?? null;
+
+export const RANDOM_OBJECT = "0x8";
