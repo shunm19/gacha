@@ -63,7 +63,7 @@ export function Operator({ pkg, coinType, poolId, adminCapId, byCard }: Props) {
             const left = n(r.deadline_ms) - now;
             return (
               <div key={r.objectId} className="flex flex-wrap items-center gap-3 rounded-xl border bg-white/[0.03] p-3">
-                {c && <img src={c.image} alt="" className="h-14 w-20 object-contain" />}
+                {c && <img src={c.image} alt="" className="aspect-[63/88] h-16 rounded object-cover" />}
                 <div className="min-w-0 flex-1 text-sm">
                   <div className="font-medium">
                     {c?.name} <span className="text-xs text-muted-foreground">cert {r.prize.cert}</span>

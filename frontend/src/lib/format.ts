@@ -53,9 +53,10 @@ export const pct = (x: number, digits = 1) => `${(x * 100).toFixed(digits)}%`;
 
 export const short = (addr: string) => `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 
-export const txUrl = (digest: string) => `https://suiscan.xyz/testnet/tx/${digest}`;
-export const objUrl = (id: string) => `https://suiscan.xyz/testnet/object/${id}`;
-export const accountUrl = (id: string) => `https://suiscan.xyz/testnet/account/${id}`;
+const SCAN = `https://suiscan.xyz/${import.meta.env.VITE_ORIPA_NETWORK === "local" ? "localnet" : "testnet"}`;
+export const txUrl = (digest: string) => `${SCAN}/tx/${digest}`;
+export const objUrl = (id: string) => `${SCAN}/object/${id}`;
+export const accountUrl = (id: string) => `${SCAN}/account/${id}`;
 
 export const toHex = (bytes: ArrayLike<number>) =>
   Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");

@@ -17,3 +17,5 @@ frontend/public/cards/
 !.env.example
 
 .DS_Store
+.sui-local/
+frontend/src/config/deployed.local.json

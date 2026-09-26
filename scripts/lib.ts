@@ -9,18 +9,24 @@ import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { fromBase64 } from "@mysten/sui/utils";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-export const SUI_CONFIG = resolve(ROOT, ".sui/client.yaml");
-export const DEPLOYED = resolve(ROOT, "frontend/src/config/deployed.json");
-export const USDC_TYPE =
-  "0xa1ec7fc00a6f40db9693ad1415d0c193ad3906494428cf252621037bd7117e29::usdc::USDC";
+// ORIPA_NETWORK=local runs everything against `sui start` (localnet, SUI as the coin)
+// with its own config/key in .sui-local/, so the testnet setup is never touched.
+export const LOCAL = process.env.ORIPA_NETWORK === "local";
+export const NETWORK = LOCAL ? "local" : "testnet";
+const SUI_DIR = resolve(ROOT, LOCAL ? ".sui-local" : ".sui");
+export const SUI_CONFIG = resolve(SUI_DIR, "client.yaml");
+export const DEPLOYED = resolve(ROOT, `frontend/src/config/deployed${LOCAL ? ".local" : ""}.json`);
+export const USDC_TYPE = LOCAL
+  ? "0x2::sui::SUI"
+  : "0xa1ec7fc00a6f40db9693ad1415d0c193ad3906494428cf252621037bd7117e29::usdc::USDC";
 
 export const client = new SuiGrpcClient({
-  network: "testnet",
-  baseUrl: "https://fullnode.testnet.sui.io:443",
+  network: LOCAL ? "localnet" : "testnet",
+  baseUrl: LOCAL ? "http://127.0.0.1:9000" : "https://fullnode.testnet.sui.io:443",
 });
 
 export function keypair(): Ed25519Keypair {
-  const keys = JSON.parse(readFileSync(resolve(ROOT, ".sui/sui.keystore"), "utf8")) as string[];
+  const keys = JSON.parse(readFileSync(resolve(SUI_DIR, "sui.keystore"), "utf8")) as string[];
   const kp = Ed25519Keypair.fromSecretKey(fromBase64(keys[0]).slice(1));
   const active = execFileSync("sui", ["client", "--client.config", SUI_CONFIG, "active-address"], {
     cwd: ROOT,

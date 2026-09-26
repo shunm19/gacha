@@ -1,16 +1,17 @@
 import { createDAppKit } from "@mysten/dapp-kit-react";
 import { SuiGrpcClient } from "@mysten/sui/grpc";
+import { LOCAL } from "./config";
 
 const GRPC_URLS = {
-  mainnet: "https://fullnode.mainnet.sui.io:443",
   testnet: "https://fullnode.testnet.sui.io:443",
-  devnet: "https://fullnode.devnet.sui.io:443",
+  localnet: "http://127.0.0.1:9000",
 };
 
+// VITE_ORIPA_NETWORK=local points the app at `sui start` for development.
 export const dAppKit = createDAppKit({
   enableBurnerWallet: import.meta.env.DEV,
-  networks: ["mainnet", "testnet", "devnet"],
-  defaultNetwork: "testnet",
+  networks: LOCAL ? ["localnet"] : ["testnet"],
+  defaultNetwork: LOCAL ? "localnet" : "testnet",
   createClient(network) {
     return new SuiGrpcClient({ network, baseUrl: GRPC_URLS[network] });
   },

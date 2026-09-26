@@ -97,7 +97,7 @@ export function MyPulls({ pkg, coinType, poolId, meta, byCard }: Props) {
             const due = (n(r.prize.value) * bps) / 10000;
             return (
               <div key={r.objectId} className="flex flex-wrap items-center gap-3 rounded-xl border bg-white/[0.03] p-3">
-                {c && <img src={c.image} alt="" className="h-14 w-20 object-contain" />}
+                {c && <img src={c.image} alt="" className="aspect-[63/88] h-16 rounded object-cover" />}
                 <div className="min-w-0 flex-1 text-sm">
                   <div className="font-medium">{c?.name}</div>
                   <div className="text-xs text-muted-foreground">

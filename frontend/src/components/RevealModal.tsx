@@ -66,8 +66,8 @@ export function RevealModal({
                   <div className={cn("text-center text-lg font-black tracking-widest", tier.text)}>
                     {tier.name} · {tier.label.toUpperCase()}
                   </div>
-                  <div className="my-3 flex flex-1 items-center justify-center overflow-hidden rounded-xl bg-white/5">
-                    <img src={card.image} alt={card.name} className="h-full w-full scale-125 object-contain" />
+                  <div className="mx-auto my-2 aspect-[63/88] h-[250px] overflow-hidden rounded-xl bg-white/5">
+                    <img src={card.image} alt={card.name} className="h-full w-full object-cover" />
                   </div>
                   <div className="text-center text-base font-semibold">{card.name}</div>
                   <div className="text-center text-xs text-muted-foreground">

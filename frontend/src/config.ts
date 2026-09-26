@@ -11,7 +11,10 @@ export type Deployed = {
   >;
 };
 
-const found = import.meta.glob<{ default: Deployed }>("./config/deployed.json", { eager: true });
-export const deployed: Deployed | null = found["./config/deployed.json"]?.default ?? null;
+export const LOCAL = import.meta.env.VITE_ORIPA_NETWORK === "local";
+
+const found = import.meta.glob<{ default: Deployed }>("./config/deployed*.json", { eager: true });
+export const deployed: Deployed | null =
+  found[LOCAL ? "./config/deployed.local.json" : "./config/deployed.json"]?.default ?? null;
 
 export const RANDOM_OBJECT = "0x8";

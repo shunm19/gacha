@@ -43,8 +43,8 @@ export function CardTile({
         className,
       )}
     >
-      <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-lg bg-white/5">
-        <img src={card.image} alt={card.name} loading="lazy" className="h-full w-full scale-125 object-contain" />
+      <div className="aspect-[63/88] overflow-hidden rounded-lg bg-white/5">
+        <img src={card.image} alt={card.name} loading="lazy" className="h-full w-full object-cover" />
       </div>
       <div className="mt-2 flex items-start gap-1.5">
         <TierBadge tier={card.tier} />
