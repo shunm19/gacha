@@ -4,7 +4,7 @@ import { cn } from "../lib/utils";
 
 export type Reveal =
   | { phase: "pending"; label: string }
-  | { phase: "done"; card: CardMeta; digest: string; valueUnits: string; remaining?: number };
+  | { phase: "done"; card: CardMeta; digest: string; valueUnits: string; remaining?: number; note?: string };
 
 export function RevealModal({
   reveal,
@@ -87,6 +87,7 @@ export function RevealModal({
               On-chain value {usdc(reveal.valueUnits)} USDC ({yen(unitsToYen(reveal.valueUnits, meta))} at demo scale)
               {reveal.remaining !== undefined && ` · ${reveal.remaining} draws left`}
             </div>
+            {reveal.note && <div className="font-medium text-violet-300">{reveal.note}</div>}
             <a className="text-sky-400 underline" href={txUrl(reveal.digest)} target="_blank" rel="noreferrer">
               View the draw on Suiscan
             </a>

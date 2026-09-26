@@ -2,6 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { ConnectButton } from "@mysten/dapp-kit-react/ui";
 import { useState } from "react";
 import { BatchView } from "./components/BatchView";
+import { BlindView } from "./components/BlindView";
 import { MyPulls } from "./components/MyPulls";
 import { Operator } from "./components/Operator";
 import { PoolView } from "./components/PoolView";
@@ -11,7 +12,7 @@ import { useMetadata, useUsdcBalance } from "./lib/chain";
 import { usdc } from "./lib/format";
 import { cn } from "./lib/utils";
 
-type Tab = "pool" | "pulls" | "batch" | "verify" | "operator";
+type Tab = "pool" | "blind" | "pulls" | "batch" | "verify" | "operator";
 
 function Balances({ coinType }: { coinType: string }) {
   const account = useCurrentAccount();
@@ -43,9 +44,10 @@ function App() {
   const batch = deployed?.pools.batch;
 
   const tabs: { id: Tab; label: string; show: boolean }[] = [
-    { id: "pool", label: "Pool", show: true },
-    { id: "pulls", label: "My Pulls", show: true },
+    { id: "pool", label: "Open Pool", show: true },
+    { id: "blind", label: "Blind (JP)", show: !!deployed?.blind?.poolId },
     { id: "batch", label: "Batch Break", show: !!batch },
+    { id: "pulls", label: "My Pulls", show: true },
     { id: "verify", label: "Verify", show: true },
     { id: "operator", label: "Operator", show: true },
   ];
@@ -98,6 +100,7 @@ function App() {
             {tab === "pulls" && (
               <MyPulls pkg={deployed.packageId} coinType={deployed.coinType} poolId={main.poolId} meta={md.meta} byCard={md.byCard} />
             )}
+            {tab === "blind" && deployed.blind?.poolId && <BlindView deployed={deployed} meta={md.meta} byCard={md.byCard} />}
             {tab === "batch" && batch && (
               <BatchView pkg={deployed.packageId} coinType={deployed.coinType} poolId={batch.poolId} meta={md.meta} byCard={md.byCard} />
             )}
