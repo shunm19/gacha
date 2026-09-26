@@ -173,6 +173,17 @@ export function BlindView({ deployed, meta, byCard }: Props) {
         </div>
       </div>
 
+      {!window.isSecureContext && (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-200">
+          Seal decryption needs a secure context (https or localhost); this page is plain http, so the browser hides
+          the AES-GCM API it uses. Open the https address instead, e.g.{" "}
+          <a className="underline" href={`https://mac-mini.tail65cb28.ts.net:8793${location.pathname}`}>
+            https://mac-mini.tail65cb28.ts.net:8793
+          </a>
+          .
+        </div>
+      )}
+
       {errors.map((e) => (
         <div key={e} className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs break-all text-red-300">
           {e}
