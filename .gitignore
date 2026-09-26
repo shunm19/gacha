@@ -1,0 +1,19 @@
+# Sui
+.sui/
+move/**/build/
+move/**/Move.lock
+
+# Node
+node_modules/
+dist/
+*.log
+
+# Card images copied from psa-data (not redistributed)
+frontend/public/cards/
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+.DS_Store
